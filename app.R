@@ -5,7 +5,7 @@ library(plotly)
 library(DT)
 
 # Load data
-pbmc <- readRDS("../results/03_pbmc_annotated.rds")
+pbmc <- readRDS("results/03_pbmc_annotated.rds")
 
 # Curated, vibrant color palette ensuring no dull greys
 custom_colors <- c(
@@ -289,8 +289,8 @@ server <- function(input, output, session) {
   output$marker_table <- renderDT({
     table_class <- 'cell-border stripe hover dark-table'
     
-    if(file.exists("../results/03_marker_genes.csv")) {
-      data <- read.csv("../results/03_marker_genes.csv")
+    if(file.exists("results/03_marker_genes.csv")) {
+      data <- read.csv("results/03_marker_genes.csv")
       data$p_val <- signif(data$p_val, 3)
       data$p_val_adj <- signif(data$p_val_adj, 3)
       data$avg_log2FC <- round(data$avg_log2FC, 2)

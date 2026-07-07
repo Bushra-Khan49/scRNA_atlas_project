@@ -225,6 +225,7 @@ server <- function(input, output, session) {
 
   output$expr_plot <- renderPlotly({
     req(input$gene) 
+    req(input$gene %in% rownames(pbmc))
     
     df <- FetchData(pbmc, vars = c(input$gene, "cell_type"))
     colnames(df) <- c("expression", "cell_type")

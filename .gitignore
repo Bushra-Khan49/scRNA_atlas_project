@@ -1,0 +1,6 @@
+data/*.h5
+data/*10x*
+*.Rhistory
+.Rproj.user/
+renv/library/
+

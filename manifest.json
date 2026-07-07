@@ -6733,10 +6733,10 @@
   },
   "files": {
     ".Rprofile": {
-      "checksum": "4c3d494f9522489015f6a033aef45a7e"
+      "checksum": "a0d56dddf7220713664807e519477b21"
     },
     "app.R": {
-      "checksum": "4cfa17c00dd5c237d1d71681f51622b5"
+      "checksum": "90c6255ae9438ec25d0758bca70adf75"
     },
     "computational_pipeline/00_download_data.R": {
       "checksum": "cdf12a49d26aaf3f16cf4fa3ef51b6ff"
@@ -6803,6 +6803,9 @@
     },
     "results/03_pbmc_annotated.rds": {
       "checksum": "f57859cb192cd5baca1694af862330e8"
+    },
+    "results/03_pbmc_slim.rds": {
+      "checksum": "2c08402d52ad5796b70bc78a58b3c004"
     },
     "results/04_Tcell_DE.csv": {
       "checksum": "8dcf2f7e743717db80bdd90688070922"

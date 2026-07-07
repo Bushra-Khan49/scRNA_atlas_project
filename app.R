@@ -5,7 +5,7 @@ library(plotly)
 library(DT)
 
 # Load data
-pbmc <- readRDS("results/03_pbmc_annotated.rds")
+pbmc <- readRDS("results/03_pbmc_slim.rds")
 
 # Curated, vibrant color palette ensuring no dull greys
 custom_colors <- c(

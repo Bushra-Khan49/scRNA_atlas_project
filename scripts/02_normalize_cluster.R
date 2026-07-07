@@ -16,7 +16,15 @@ pbmc <- FindNeighbors(pbmc, dims = 1:10)
 pbmc <- FindClusters(pbmc, resolution = 0.5)   # Louvain algorithm
 pbmc <- RunUMAP(pbmc, dims = 1:10)
 
-DimPlot(pbmc, reduction = "umap", label = TRUE)
-ggsave("figures/02_umap_clusters.png", width = 6, height = 5)
+DimPlot(pbmc, reduction = "umap", label = TRUE, pt.size = 0.5) + 
+  theme_classic() +
+  labs(title = "Mathematical Clustering (UMAP)", 
+       x = "UMAP Dimension 1", 
+       y = "UMAP Dimension 2") +
+  theme(
+    axis.line = element_line(arrow = arrow(length = unit(0.3, "cm"), type = "closed")),
+    plot.title = element_text(face = "bold", size = 14)
+  )
+ggsave("figures/02_umap_clusters.png", width = 7, height = 6, bg = "white")
 
 saveRDS(pbmc, "results/02_pbmc_clustered.rds")

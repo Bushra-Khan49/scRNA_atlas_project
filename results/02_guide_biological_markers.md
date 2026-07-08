@@ -26,14 +26,45 @@ Furthermore, MS4A1 is the gene that encodes the **CD20** protein—the most famo
 
 ### Analyzing the T Cell Lineage
 Looking at the data for **T Cells**:
-* **CD3D:** `avg_log2FC = 3.79`, `pct.1 = 0.886`, `pct.2 = 0.099`
+* **CD3D:** `avg_log2FC = 3.80`, `pct.1 = 0.886`, `pct.2 = 0.099`
 
 **Biological Interpretation:** 
 CD3D is an essential part of the T-cell receptor (TCR) complex. The data shows it is expressed roughly 14 times higher in our T cell cluster than in the background, and is present in nearly 90% of the cells in that cluster.
 
-**Noting an Inconsistency:** 
-You might notice that the Log2 Fold Change for T cell markers (~3.79) is significantly lower than the massive fold changes we saw for B cell markers (~6.49). Why is that? This is a known biological nuance in single-cell sequencing. T cells and NK (Natural Killer) cells share a massive amount of transcriptomic machinery (such as cytotoxic granules and signaling cascades). Because they are so genetically similar, comparing a T cell to the "rest of the cells" (which includes NK cells) statistically dilutes the Fold Change. The algorithm perfectly captured this biological similarity, which is why the T cell markers appear slightly less dominant than the B cell markers, yet still highly significant.
+*(Note on Inconsistency: The Log2 Fold Change for T cell markers (~3.80) is lower than B cell markers (~6.49) because T cells and NK cells share significant transcriptomic machinery. When compared to the "rest of the cells", which includes NK cells, the statistical Fold Change is naturally diluted.)*
 
+### Analyzing the Monocyte Lineage
+Looking at the data for **Monocytes**:
+* **IGSF6:** `avg_log2FC = 5.27`, `pct.1 = 0.426`, `pct.2 = 0.012`
+* **LYZ:** `avg_log2FC = 4.42`, `pct.1 = 0.997`, `pct.2 = 0.485`
+
+**Biological Interpretation:**
+Monocytes are the primary phagocytes of the immune system. The massive presence of `LYZ` (Lysozyme, present in 99.7% of the cluster) provides them with the antimicrobial enzymes needed to break down engulfed pathogens, definitively proving their myeloid identity.
+
+### Analyzing the NK Cell Lineage
+Looking at the data for **Natural Killer (NK) Cells**:
+* **GNLY:** `avg_log2FC = 6.37`, `pct.1 = 0.865`, `pct.2 = 0.126`
+* **GZMB:** `avg_log2FC = 5.99`, `pct.1 = 0.860`, `pct.2 = 0.062`
+
+**Biological Interpretation:**
+NK Cells are specialized assassins designed to induce apoptosis in virally infected or cancerous cells. `GNLY` (Granulysin) and `GZMB` (Granzyme B) are the literal toxic proteins loaded into their cytotoxic granules, and their massive upregulation confirms the deadly function of this cluster.
+
+### Analyzing the Platelet Lineage
+Looking at the data for **Platelets**:
+* **PPBP:** `avg_log2FC = 10.91`, `pct.1 = 1.000`, `pct.2 = 0.024`
+* **PF4:** `avg_log2FC = 10.58`, `pct.1 = 1.000`, `pct.2 = 0.011`
+
+**Biological Interpretation:**
+A Log2FC of nearly 11 represents a staggering >2,000-fold increase in expression. Platelet Factor 4 (`PF4`) and Pro-Platelet Basic Protein (`PPBP`) are the defining chemokines released during blood coagulation, cementing this tiny cluster as highly functional platelets.
+
+### Analyzing the Progenitor & Developing B-Cell Lineages (CMP, Pre-B, Pro-B)
+Finally, we analyze the rare, developmental precursor states:
+* **CMP (Common Myeloid Progenitors):** Marked by `LZTS2` (`avg_log2FC = 11.4`, `pct.1 = 0.500`, `pct.2 = 0.004`), identifying early, uncommitted stem-like precursors.
+* **Pro-B Cells (CD34+):** Marked by `PRPS2` (`avg_log2FC = 7.86`, `pct.1 = 0.400`, `pct.2 = 0.046`), representing the absolute earliest stages of B-cell receptor genetic recombination.
+* **Pre-B Cells (CD34-):** Marked by intermediate markers like `FPR1` (`avg_log2FC = 3.27`), representing B-cells transitioning toward mature functionality.
+
+**Biological Interpretation:**
+The ability of this computational pipeline to not only map mature, abundant cells (like T and B cells) but also to successfully isolate the incredibly rare developmental trajectory of a B-cell from its Pro-B state, to its Pre-B state, to its mature state, demonstrates the phenomenal precision of single-cell RNA sequencing.
 ---
 
 ## 3. Final Conclusion

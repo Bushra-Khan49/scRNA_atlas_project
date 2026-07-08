@@ -182,7 +182,7 @@ server <- function(input, output, session) {
     p <- plot_ly(df, x = ~umap_1, y = ~umap_2, 
                  color = as.formula(paste0("~", input$group_var)),
                  colors = color_mapping,
-                 type = "scatter", mode = "markers", 
+                 type = "scattergl", mode = "markers", 
                  marker = list(size = 4, opacity = 0.9, line = list(width = 0)),
                  hoverinfo = "text",
                  text = ~paste("Identity:", get(input$group_var))) %>%
@@ -247,7 +247,7 @@ server <- function(input, output, session) {
     } else {
       p <- plot_ly(df, x = ~cell_type, y = ~expression, 
                    color = ~cell_type, colors = custom_colors,
-                   type = "scatter", mode = "markers",
+                   type = "scattergl", mode = "markers",
                    marker = list(size = 3, opacity = 0.6, line = list(width = 0)),
                    x0 = 0)
     }

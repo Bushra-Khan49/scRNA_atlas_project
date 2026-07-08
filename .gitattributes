@@ -1,0 +1,3 @@
+# Hide CSS and JSON from GitHub's language statistics to ensure R is the primary language
+*.css linguist-vendored=true
+*.json linguist-vendored=true

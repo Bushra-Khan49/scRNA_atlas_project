@@ -1,11 +1,10 @@
 # Single-Cell RNA-Seq Transcriptomics Explorer (PBMC)
 
-![Dashboard Preview](figures/02_umap_clusters.png) 
-*(Note: Replace the image above with an actual screenshot or GIF of the Shiny dashboard)*
+![Dashboard Preview](figures/dashboard_preview.png)
 
 This repository contains an end-to-end Computational Biology pipeline and interactive visualization dashboard built in R. I processed raw Peripheral Blood Mononuclear Cell (PBMC) scRNA-seq data through quality control, normalization, dimensionality reduction, cell-type annotation, and deployed it as a responsive Shiny application.
 
-**[Link to Live Dashboard](https://your-shinyapps-url-here.shinyapps.io/pbmc-explorer)**
+**[Link to Live Dashboard](https://019f3fdd-671c-5499-a2ef-a297424cb872.share.connect.posit.cloud/)**
 
 **Dataset Citation:** The data utilized in this project is the publicly available [10x Genomics PBMC 3k dataset](https://www.10xgenomics.com/resources/datasets/3-k-pbm-cs-from-a-healthy-donor-1-standard-1-1-0), sequenced on the Chromium system.
 

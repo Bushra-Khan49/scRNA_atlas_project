@@ -1,86 +1,118 @@
-This file takes the clean, filtered cells from the previous step and prepares them for grouping. I normalized the data so that the genes were actually comparable across different cells, found the genes that varied the most, and then grouped similar cells together into clusters.
+# Phase 2: Normalization and Clustering
+
+**Overview**: In this file, I am taking the clean, healthy cells that survived our quality control phase, and figuring out how to group them together. To do this, you first have to normalize the data so you can actually compare the cells to each other fairly. Then, you pull out the specific genes that make the cells different from one another, crush the data down to its most important dimensions using PCA, and finally cluster them into distinct biological islands.
 
 ---
 
-# Phase 2: Normalization and Clustering
+## 1. Normalizing the Data
+
+Whenever you run single-cell sequencing, different cells end up getting sequenced at slightly different depths purely by chance. Some might have 1,000 RNA molecules detected, and others might have 1,500, even if they are identical cells. Make sure you keep in mind that if you don't normalize this, your computer will think those cells are different just because of a technical error. 
+
+Here, I load the clean data and apply a standard Log Normalization.
 
 ```r
+# Load Seurat and ggplot2
 library(Seurat)
 library(ggplot2)
+
+# Load the filtered data object we saved in Phase 1
+pbmc <- readRDS("../results/01_pbmc_filtered.rds")
+
+# Normalize the data so gene expression is comparable across all cells
+pbmc <- NormalizeData(pbmc, normalization.method = "LogNormalize", scale.factor = 10000)
 ```
 
 ---
 
-## Normalizing the Data
-Different cells get sequenced at different depths just by chance, so comparing raw numbers directly doesn't work. I brought in the clean data from Phase 1 and normalized it. After that, I looked for the top 2,000 genes that varied the most between cells, because those are the ones that actually tell us what makes one cell different from another. I then scaled the data so that a few really loud genes wouldn't mess up the clustering.
+## 2. Finding the Variable Genes
+
+Out of the 20,000+ genes in the human genome, most of them do the exact same basic housekeeping tasks in every single cell. We don't care about those. We only want the genes that are highly turned on in some cells but turned off in others. 
+
+I tell Seurat to find the top 2,000 most highly variable genes. Then, I scale the data. You must do this, because otherwise, a gene that is naturally expressed at very high levels will completely overpower a gene that is expressed at low levels but is actually very biologically important.
 
 ```r
-pbmc <- readRDS("../results/01_pbmc_filtered.rds")
-
-pbmc <- NormalizeData(pbmc, normalization.method = "LogNormalize", scale.factor = 10000)
+# Identify the top 2000 genes with the highest variance between cells
 pbmc <- FindVariableFeatures(pbmc, selection.method = "vst", nfeatures = 2000)
+
+# Scale the data so the mean expression is 0 and variance is 1
 pbmc <- ScaleData(pbmc, features = rownames(pbmc))
 ```
 
 ---
 
-## Figuring out Principal Components (PCA)
-Working with 2,000 genes is way too much for a computer to cluster easily. So, I ran PCA to squish the data down into the most important components.
+## 3. Dimensionality Reduction (PCA)
 
-**Troubleshooting Note**: Choosing how many PCs to use is always a bit tricky. If you use too few, you miss the biology. If you use too many, you just start grouping noise. I plotted an Elbow Plot to see where the variance dropped off. Looking at the graph, the line flattened out around 10, so I decided to stick with the first 10 PCs for my clustering. 
+Trying to cluster cells across 2,000 different gene dimensions is nearly impossible for a computer. It's called the "curse of dimensionality". To fix this, I run Principal Component Analysis (PCA), which squishes all that variance down into a few super-components.
+
+How do you know how many Principal Components to use? You run an Elbow Plot. 
 
 ```r
+# Run PCA on the scaled data using our 2000 variable features
 pbmc <- RunPCA(pbmc, features = VariableFeatures(pbmc))
 
+# Plot the variance explained by each Principal Component
 ElbowPlot(pbmc, ndims = 30) +
+  geom_vline(xintercept = 10, linetype = "dashed", color = "red", size = 1) +
   theme_classic() +
   theme(axis.line = element_line(arrow = arrow(length = unit(0.3, "cm"), type = "closed")),
         plot.title = element_text(face = "bold", size = 14)) +
-  labs(title = "Figure 3: PCA Elbow Plot", subtitle = "Variance explained by each Principal Component", x = "Principal Component", y = "Standard Deviation")
+  labs(title = "Figure 3: PCA Variance (Elbow Plot)", subtitle = "Dashed red line indicates dimensional cutoff at PC 10", x = "Principal Component Index (Dimensions)", y = "Standard Deviation (Variance)")
 ```
 
 ![Figure 3: PCA Variance (Elbow Plot)](../figures/02_elbow.png)
 
+Looking at the graph above, the variance drops sharply and then flattens out around 10. That's why I chose to use the first 10 PCs for the final clustering. 
 
 ---
 
-## Grouping the Cells (Clustering)
-Once I had my 10 PCs, I used them to find which cells were closest to each other and grouped them into distinct clusters. 
+## 4. Grouping the Cells (Clustering)
 
-To actually see these clusters, I ran UMAP, which takes all that complicated data and flattens it onto a simple 2D plot so I can visually check if the groups make sense.
+Now that I have my 10 dimensions, I build a K-Nearest Neighbor graph, which essentially draws lines between the cells that are most similar to each other. Then I run a clustering algorithm to group them into actual communities.
+
+Finally, I run UMAP. UMAP takes that 10-dimensional graph and crushes it down to a 2D map so human eyes can actually look at it and verify the clusters.
 
 ```r
+# Find the closest neighbors in 10-dimensional PCA space
 pbmc <- FindNeighbors(pbmc, dims = 1:10)
+
+# Group the neighbors into distinct clusters (resolution 0.5)
 pbmc <- FindClusters(pbmc, resolution = 0.5)
+
+# Run UMAP to project the clusters onto a 2D plot
 pbmc <- RunUMAP(pbmc, dims = 1:10)
 ```
 
 ---
 
-## What the Clusters Looked Like
-**Figure 4: Mathematical Clustering**
-When I plotted the UMAP, I got a nice visual showing distinct islands of cells. At this point, the program just grouped them by similarities but didn't know what kind of cells they actually were (it just called them Cluster 0, Cluster 1, etc.). I made sure to format the legend clearly so it was easy to read.
+## 5. Visualizing the Clusters
+
+Here, I generate the UMAP plot. At this stage, the computer doesn't know what a "T Cell" or a "B Cell" is; it just knows that certain cells look mathematically similar. That's why the legend just says "Cluster 0", "Cluster 1", etc. 
+
+Notice that I turned the text labels *off* the plot and put them in a legend instead. You should always do this if you have a lot of clusters, otherwise the text overlaps the dots and looks extremely messy.
 
 ```r
+# Update the cluster names so they look cleaner in the legend
 pbmc$seurat_clusters <- paste("Cluster", pbmc$seurat_clusters)
 Idents(pbmc) <- "seurat_clusters"
 
-DimPlot(pbmc, reduction = "umap", label = TRUE, label.size = 5, repel = TRUE, pt.size = 0.5) +
+# Plot the UMAP
+DimPlot(pbmc, reduction = "umap", label = FALSE, pt.size = 0.5) +
   theme_classic() +
   theme(axis.line = element_line(arrow = arrow(length = unit(0.3, "cm"), type = "closed")),
         plot.title = element_text(face = "bold", size = 14),
-        legend.text = element_text(face = "bold")) +
-  labs(title = "Figure 4: Mathematical Clustering", subtitle = "UMAP projection of K-Nearest Neighbor louvain clusters", x = "UMAP Dimension 1", y = "UMAP Dimension 2")
+        legend.text = element_text(face = "bold", size = 10)) +
+  labs(title = "Figure 4: Mathematical Clustering", subtitle = "UMAP projection of KNN louvain clusters", x = "UMAP Dimension 1", y = "UMAP Dimension 2")
 ```
 
 ![Figure 4: Mathematical Clustering](../figures/02_umap_clusters.png)
 
-
 ---
 
-## Saving the Clustered Data
-I saved the object again. In the final step, I'll figure out what real cell types these clusters actually correspond to.
+## 6. Saving the Clustered Data
+
+I saved this clustered object as a new file. In the final phase, we are going to figure out what those clusters actually represent biologically!
 
 ```r
+# Save the clustered Seurat object
 saveRDS(pbmc, "../results/02_pbmc_clustered.rds")
 ```

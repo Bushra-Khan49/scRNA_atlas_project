@@ -1,0 +1,6 @@
+renv/
+renv.lock
+computational_pipeline/
+results/01_pbmc_filtered.rds
+results/02_pbmc_clustered.rds
+results/03_pbmc_annotated.rds

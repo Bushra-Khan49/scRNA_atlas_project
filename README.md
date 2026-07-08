@@ -82,7 +82,7 @@ This project is fully production-ready and reproducible. All dependencies (Seura
 ```
 scRNA_atlas_project/
 ├── renv/                       # Isolated reproducible R environment
-├── renv.lock                   # Package versions and hashes
+├── pipeline_env.lock                   # Package versions and hashes
 ├── data/                       # Raw cellranger output (matrix, features, barcodes)
 ├── computational_pipeline/     # Step-by-step pipeline tutorials (.md)
 ├── results/                    # Compiled .rds objects and CSV biomarker data

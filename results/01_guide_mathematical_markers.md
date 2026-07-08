@@ -33,6 +33,16 @@ Further down, we see the defining markers for **Cluster 1**:
 **Biological Interpretation:** 
 These numbers are staggering. An Average Log2 Fold Change of 6.64 means the S100A8 gene is expressed nearly **100 times higher** in Cluster 1 than in the rest of the blood sample. Furthermore, it is present in 97.5% of the cells in this cluster, and barely exists outside of it. S100A8 and S100A9 are textbook, canonical markers for **CD14+ Monocytes**. The sheer mathematical dominance of these two genes proves that Cluster 1 is a nearly flawless, homogenous population of Monocytes.
 
+### Analyzing the Remaining Clusters (2 through 8)
+Continuing through the file, we can map the mathematical signatures of every remaining cluster in the dataset:
+
+* **Cluster 2 (Memory/Effector T Cells):** Defined by **AQP3** (`avg_log2FC = 2.09`) and **CD40LG** (`avg_log2FC = 1.87`). Notice these are distinct from Cluster 0's naïve markers.
+* **Cluster 3 (B Cells):** Mathematically isolated by massive upregulation of canonical B cell genes like **VPREB3** (`avg_log2FC = 7.14`) and **LINC00926** (`avg_log2FC = 7.38`), demonstrating a highly specific population.
+* **Cluster 4 (CD8+ Cytotoxic T Cells):** Distinguished mathematically by the toxic granule protein **GZMK** (`avg_log2FC = 4.41`) and **GZMH** (`avg_log2FC = 3.74`).
+* **Cluster 5 (NK Cells):** Characterized by high expression of **CKB** (`avg_log2FC = 5.88`) and **CDKN1C** (`avg_log2FC = 5.43`).
+* **Cluster 6 (Non-Classical Monocytes):** Identified by distinct markers like **AKR1C3** (`avg_log2FC = 6.22`) and **SH2D1B** (`avg_log2FC = 6.07`).
+* **Cluster 7 (Dendritic Cells / Rare Myeloid):** Defined by the high-affinity IgE receptor **FCER1A** (`avg_log2FC = 7.63`, present in 81.2% of the cluster vs 1.1% background).
+* **Cluster 8 (Platelets):** Mathematically distinct with astronomical log2 fold changes for **LY6G6F** (`avg_log2FC = 14.4`) and **RP11-879F14.2** (`avg_log2FC = 13.9`), definitively isolating blood platelets.
 ---
 
 ## 3. Final Conclusion

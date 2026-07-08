@@ -22,7 +22,11 @@ Following quality control, the data was normalized to correct for varying sequen
 
 ![Figure 3: PCA Variance (Elbow Plot)](../figures/02_elbow.png)
 
-The elbow plot (**Figure 3**) indicates a sharp drop in variance that effectively plateaus at Principal Component 10. Utilizing these first 10 dimensions, I constructed a K-Nearest Neighbor (KNN) graph to map transcriptomic similarities, followed by Louvain clustering.
+As shown in the elbow plot (**Figure 3**), there is a massive, steep drop in variance across the first few Principal Components. This sharp drop occurs because these initial components capture the largest, most obvious biological differences in the blood sample (for example, the massive genetic difference between a T Cell and a Monocyte). 
+
+However, right around Principal Component 10, the curve completely flattens out into a plateau. This flattening occurs because the algorithm has already mapped all the major biological identities; any variance beyond this point represents irrelevant statistical noise or minor individual cell quirks rather than distinct cell types. **To visually explicitly mark this inflection point, I drew a dashed red line directly at PC 10.** Relying on this visual plateau and the red marker, I purposefully isolated the first 10 dimensions for the final mathematical clustering, ensuring the model ignores the downstream noise.
+
+Utilizing these first 10 dimensions, I constructed a K-Nearest Neighbor (KNN) graph to map transcriptomic similarities, followed by Louvain clustering.
 
 ![Figure 4: Mathematical Clustering](../figures/02_umap_clusters.png)
 

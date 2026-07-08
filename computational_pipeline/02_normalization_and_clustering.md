@@ -54,7 +54,11 @@ ggsave("../figures/02_elbow.png", plot = elbow_plot, width = 8, height = 6, bg =
 ![Figure 3: PCA Variance (Elbow Plot)](../figures/02_elbow.png)
 
 ### Image Interpretation: Finding the Dimensional Cutoff
-If you look at the black dots in **Figure 3**, you can see a very steep, dramatic drop in the standard deviation starting from PC 1. However, right around PC 10 (which I highlighted by drawing a dashed red line), the curve begins to flatten out, forming a visual "elbow". Because the variance plateaus here, any dimensions after PC 10 mostly represent random statistical noise rather than true biological signal. Relying on this visual plateau, I explicitly chose to use only the first 10 dimensions for the final clustering.
+If you look at the black dots in **Figure 3**, you can see a very steep, dramatic drop in the standard deviation starting from Principal Component 1. **Why does it drop so sharply?** Because the very first few components capture the absolute largest biological differences in the blood—like the massive genetic difference between a T Cell and a Monocyte. 
+
+However, right around PC 10, the curve completely flattens out, forming a visual "elbow". **Why does it flatten?** Because after the first 10 dimensions, the algorithm has already captured all the major biological identities. Any dimensions after PC 10 mostly represent random statistical noise or minor, irrelevant variations between individual cells. 
+
+To make this mathematically obvious, **I manually drew a dashed red vertical line directly at PC 10**. This red line explicitly marks the exact inflection point where the true biological signal ends and the random statistical noise begins. Relying on this visual plateau and the red marker, I explicitly chose to use only the first 10 dimensions for the final clustering, guaranteeing that my downstream map is built entirely on true biology.
 
 ---
 

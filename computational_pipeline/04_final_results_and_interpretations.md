@@ -48,8 +48,16 @@ To rigorously validate these algorithmic predictions, I performed a differential
 
 As visualized in the biomarker expression heatmap (**Figure 6**), each annotated cell type exhibits a highly specific, densely upregulated block of gene expression. Analyzing the statistical output of this test (`04_annotated_marker_genes.csv`) confirms these findings with textbook human biology. 
 
-For example, the B Cell cluster demonstrated massive expression of the B-cell receptor component **CD79A** (Average Log2 Fold Change = 6.49, $p \approx 0$). This gene is present in 93.7% of the clustered B cells versus only 4.6% of the background population. Similarly, the T Cell cluster is definitively identified by the massive upregulation of the T-cell receptor component **CD3D** (Average Log2 Fold Change = 3.79, present in 88.6% of T cells vs 9.9% of non-T cells).
+A comprehensive breakdown of all 8 identified cell types and their defining transcriptomic signatures is detailed below:
 
+* **T Cells:** Definitively identified by the massive upregulation of the T-cell receptor component **CD3D** (Average Log2 Fold Change = 3.80, $p \approx 0$). Present in 88.6% of T cells vs 9.9% of the background.
+* **B Cells:** Characterized by massive expression of the B-cell receptor component **CD79A** (Average Log2 Fold Change = 6.49) and pre-B lymphocyte marker **VPREB3** (Average Log2 Fold Change = 6.92).
+* **Monocytes:** Identified by canonical myeloid and phagocytic markers, notably the immunoglobulin superfamily member **IGSF6** (Average Log2 Fold Change = 5.27) and **LYZ**.
+* **NK Cells (Natural Killers):** Defined by canonical cytotoxic effector molecules designed to induce apoptosis, including Granulysin (**GNLY**, Log2FC = 6.37) and Granzyme B (**GZMB**, Log2FC = 5.99).
+* **Platelets:** Mapped definitively through classical platelet chemokines, notably Platelet Factor 4 (**PF4**, Log2FC = 10.58) and Pro-Platelet Basic Protein (**PPBP**, Log2FC = 10.91).
+* **CMP (Common Myeloid Progenitors):** Characterized by high expression of progenitor-associated genes such as **LZTS2** (Log2FC = 11.4).
+* **Pre-B Cells (CD34-):** Distinguished by distinct intermediate developmental markers like **FPR1** (Log2FC = 3.27).
+* **Pro-B Cells (CD34+):** The earliest mapped stage of B-cell development in this dataset, uniquely marked by genes like **PRPS2** (Log2FC = 7.86).
 ---
 
 ## Conclusion

@@ -14,12 +14,15 @@ This repository contains an end-to-end Computational Biology pipeline and intera
 
 After fully processing the 10x Genomics dataset, the pipeline successfully retained **~2,638 highly viable cells** across 9 distinct transcriptomic clusters. 
 
-Using the `SingleR` algorithmic database and manual marker validation, I successfully annotated these mathematical clusters into their true biological lineages:
-* **T Cells (CD4+ and CD8+):** The most dominant population (~60% of the sample), driven by massive upregulation of *CD3D*, *IL7R*, and *CD2*.
-* **Monocytes (CD14+ and FCGR3A+):** The second largest population (~20%), defined by textbook markers like *S100A8*, *S100A9*, and *LYZ*.
-* **B Cells:** Accounting for ~10% of the sample, cleanly separated by *CD79A* and *MS4A1* (CD20) expression.
-* **NK Cells & Platelets:** Smaller, distinct clusters representing the remainder of the captured sample.
-
+Using the `SingleR` algorithmic database and manual marker validation, I successfully annotated these mathematical clusters into 8 true biological lineages:
+* **T Cells (CD4+ and CD8+):** The most dominant population (~60% of the sample), driven by massive upregulation of *CD3D* and *AQP3*.
+* **Monocytes (CD14+ and FCGR3A+):** The second largest population (~20%), defined by textbook myeloid markers like *IGSF6* and *LYZ*.
+* **B Cells:** Accounting for ~10% of the sample, cleanly separated by *CD79A* and *VPREB3* expression.
+* **NK Cells (Natural Killers):** Distinct cytotoxic cluster identified by *GNLY* and *GZMB*.
+* **Platelets:** Cleanly separated cluster defined by extreme expression of *PF4* and *PPBP*.
+* **CMP (Common Myeloid Progenitors):** Progenitor cells identified by *LZTS2*.
+* **Pre-B Cells (CD34-):** Intermediate developmental B-cells expressing *FPR1*.
+* **Pro-B Cells (CD34+):** Early-stage developmental B-cells expressing *PRPS2*.
 ---
 
 ## 🧬 Pipeline Methods

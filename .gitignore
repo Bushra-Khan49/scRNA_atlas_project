@@ -7,3 +7,4 @@ renv/library/
 results/*.rds
 data/
 !results/03_pbmc_slim.rds
+!dashboard/data/

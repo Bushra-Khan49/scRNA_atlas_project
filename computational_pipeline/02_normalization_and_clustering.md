@@ -1,36 +1,26 @@
 # Phase 2: Normalization and Clustering
 
-**Overview**: In this file, I am taking the clean, healthy cells that survived our quality control phase, and figuring out how to group them together. To do this, you first have to normalize the data so you can actually compare the cells to each other fairly. Then, you pull out the specific genes that make the cells different from one another, crush the data down to its most important dimensions using PCA, and finally cluster them into distinct biological islands.
+**Overview**: Having isolated a highly viable cellular population during the quality control phase, I now proceed to group these cells based on their transcriptomic similarities. This requires normalizing the raw expression data to account for technical sequencing variances, identifying the genes that drive biological diversity, and performing dimensionality reduction to map the cells into distinct mathematical clusters.
 
 ---
 
-## 1. Normalizing the Data
+## 1. Normalization and Variance Stabilization
 
-Whenever you run single-cell sequencing, different cells end up getting sequenced at slightly different depths purely by chance. Some might have 1,000 RNA molecules detected, and others might have 1,500, even if they are identical cells. Make sure you keep in mind that if you don't normalize this, your computer will think those cells are different just because of a technical error. 
+In single-cell sequencing, individual cells are captured and sequenced at varying depths due to technical artifacts. Comparing raw expression counts directly would falsely identify deeply sequenced cells as biologically distinct from shallowly sequenced cells. 
 
-Here, I load the clean data and apply a standard Log Normalization.
+To correct for this, I applied Log Normalization to the filtered dataset. Following normalization, I isolated the top 2,000 highly variable genes. Because most of the ~20,000 genes in the genome are ubiquitously expressed housekeeping genes, focusing exclusively on these 2,000 variable features allows the algorithm to cluster cells based purely on true biological variance. Finally, the data was scaled so that highly expressed genes do not artificially dominate the clustering algorithm.
 
 ```r
 # Load Seurat and ggplot2
 library(Seurat)
 library(ggplot2)
 
-# Load the filtered data object we saved in Phase 1
+# Load the filtered data object saved in Phase 1
 pbmc <- readRDS("../results/01_pbmc_filtered.rds")
 
 # Normalize the data so gene expression is comparable across all cells
 pbmc <- NormalizeData(pbmc, normalization.method = "LogNormalize", scale.factor = 10000)
-```
 
----
-
-## 2. Finding the Variable Genes
-
-Out of the 20,000+ genes in the human genome, most of them do the exact same basic housekeeping tasks in every single cell. We don't care about those. We only want the genes that are highly turned on in some cells but turned off in others. 
-
-I tell Seurat to find the top 2,000 most highly variable genes. Then, I scale the data. You must do this, because otherwise, a gene that is naturally expressed at very high levels will completely overpower a gene that is expressed at low levels but is actually very biologically important.
-
-```r
 # Identify the top 2000 genes with the highest variance between cells
 pbmc <- FindVariableFeatures(pbmc, selection.method = "vst", nfeatures = 2000)
 
@@ -40,14 +30,14 @@ pbmc <- ScaleData(pbmc, features = rownames(pbmc))
 
 ---
 
-## 3. Dimensionality Reduction (PCA)
+## 2. Dimensionality Reduction (PCA)
 
-Trying to cluster cells across 2,000 different gene dimensions is nearly impossible for a computer. It's called the "curse of dimensionality". To fix this, I run Principal Component Analysis (PCA), which squishes all that variance down into a few super-components.
+Attempting to cluster cells across 2,000 dimensions simultaneously is computationally inefficient and highly susceptible to noise. I utilized Principal Component Analysis (PCA) to compress this variance into orthogonal principal components.
 
-How do you know how many Principal Components to use? You run an Elbow Plot. 
+To determine the optimal number of dimensions for downstream clustering, I generated an Elbow Plot to visualize the variance captured by each principal component.
 
 ```r
-# Run PCA on the scaled data using our 2000 variable features
+# Run PCA on the scaled data using the 2000 variable features
 pbmc <- RunPCA(pbmc, features = VariableFeatures(pbmc))
 
 # Plot the variance explained by each Principal Component
@@ -61,15 +51,15 @@ ElbowPlot(pbmc, ndims = 30) +
 
 ![Figure 3: PCA Variance (Elbow Plot)](../figures/02_elbow.png)
 
-Looking at the graph above, the variance drops sharply and then flattens out around 10. That's why I chose to use the first 10 PCs for the final clustering. 
+As demonstrated above, the standard deviation drops sharply and begins to plateau around PC 10. Therefore, I selected the first 10 dimensions to capture the majority of the true biological signal while excluding downstream statistical noise.
 
 ---
 
-## 4. Grouping the Cells (Clustering)
+## 3. Unsupervised Clustering
 
-Now that I have my 10 dimensions, I build a K-Nearest Neighbor graph, which essentially draws lines between the cells that are most similar to each other. Then I run a clustering algorithm to group them into actual communities.
+Utilizing these 10 dimensions, I constructed a K-Nearest Neighbor (KNN) graph to identify cells with similar transcriptomic profiles. A Louvain clustering algorithm was then applied to partition this graph into distinct cellular communities.
 
-Finally, I run UMAP. UMAP takes that 10-dimensional graph and crushes it down to a 2D map so human eyes can actually look at it and verify the clusters.
+To visualize these multidimensional clusters, I projected the data into a 2D space using Uniform Manifold Approximation and Projection (UMAP).
 
 ```r
 # Find the closest neighbors in 10-dimensional PCA space
@@ -84,11 +74,11 @@ pbmc <- RunUMAP(pbmc, dims = 1:10)
 
 ---
 
-## 5. Visualizing the Clusters
+## 4. Visualizing the Mathematical Clusters
 
-Here, I generate the UMAP plot. At this stage, the computer doesn't know what a "T Cell" or a "B Cell" is; it just knows that certain cells look mathematically similar. That's why the legend just says "Cluster 0", "Cluster 1", etc. 
+At this stage, the clustering is purely mathematical. The algorithm has grouped the cells by transcriptomic similarity, assigning them anonymous labels (e.g., "Cluster 0"). 
 
-Notice that I turned the text labels *off* the plot and put them in a legend instead. You should always do this if you have a lot of clusters, otherwise the text overlaps the dots and looks extremely messy.
+To ensure the visualization remains clean and readable, I configured the plot to display a distinct legend rather than overlaying text directly onto the data points, which can obscure small cellular populations.
 
 ```r
 # Update the cluster names so they look cleaner in the legend
@@ -108,9 +98,9 @@ DimPlot(pbmc, reduction = "umap", label = FALSE, pt.size = 0.5) +
 
 ---
 
-## 6. Saving the Clustered Data
+## 5. Saving the Clustered Dataset
 
-I saved this clustered object as a new file. In the final phase, we are going to figure out what those clusters actually represent biologically!
+I saved the clustered Seurat object. In the final phase of the pipeline, I will transition from mathematical clustering to biological annotation, identifying exactly what cell types these distinct islands represent.
 
 ```r
 # Save the clustered Seurat object

@@ -1,14 +1,14 @@
-# Phase 3: Cell Type Annotation and Finding Markers
+# Phase 3: Cell Type Annotation and Biomarker Validation
 
-**Overview**: In this final processing file, I am taking the anonymous, mathematically generated clusters from Phase 2 and figuring out what actual cells they are (T Cells, B Cells, Monocytes, etc.). After naming the clusters, I run an algorithm to pull out the exact biomarker genes that make each of those cell types unique.
+**Overview**: Having successfully mapped the dataset into distinct mathematical clusters, the final processing step is to assign true biological identities to these anonymous manifolds. After mapping the cellular lineages, I performed differential expression analysis to statistically validate the distinct transcriptomic signatures driving each cluster, ensuring rigorous scientific accuracy before final export.
 
 ---
 
 ## 1. Automated Biological Annotation
 
-In the old days, scientists used to guess what the clusters were by manually staring at gene lists. This is a terrible idea because it is incredibly prone to human bias. 
+Historically, single-cell clusters were annotated manually by cross-referencing arbitrary gene lists—a process highly susceptible to human bias. To ensure robust, reproducible results, I utilized an automated reference-based annotation pipeline.
 
-Instead, I use the `SingleR` package. Make sure you do this: `SingleR` takes your data and automatically compares it against a massively curated database (the Human Primary Cell Atlas). It checks the transcriptomic profile of your cells against the known database and statistically predicts the true biological names of your clusters. 
+I employed the `SingleR` package to algorithmically compare the transcriptomic profile of my distinct clusters against the Human Primary Cell Atlas database. This effectively assigns highly accurate biological identities to the cells based on validated reference data rather than manual approximation.
 
 ```r
 # Load required libraries
@@ -29,7 +29,7 @@ sce <- as.SingleCellExperiment(pbmc)
 # Run the automated annotation algorithm
 pred <- SingleR(test = sce, ref = ref, labels = ref$label.main)
 
-# Add the predicted biological names back into our Seurat object
+# Add the predicted biological names back into the Seurat object
 pbmc$cell_type <- pred$labels
 ```
 
@@ -37,9 +37,9 @@ pbmc$cell_type <- pred$labels
 
 ## 2. Visualizing the Biological Cell Types
 
-Now that the cells have real names, I re-plot the UMAP. 
+With the biological identities successfully mapped, I generated a definitive visualization of the cellular landscape. 
 
-Make sure you pay attention to the legend formatting here. If you just slap the text labels on the plot, it becomes a jumbled mess where you can't even read the names of the small cell populations. I moved the labels to a bold side legend so that the actual visual representation of the cells remains completely clean.
+To ensure the visualization meets professional standards, I strictly maintained the legend format, keeping the text distinct from the graphical representation to prevent visual overlap on the smaller cellular populations.
 
 ```r
 # Plot the UMAP colored by the new biological cell types
@@ -55,28 +55,30 @@ DimPlot(pbmc, group.by = "cell_type", label = FALSE, pt.size = 0.5) +
 
 ---
 
-## 3. Finding the Biomarker Genes
+## 3. Extracting Biomarker Signatures
 
-Now that I know what the cells are, I need to know *why* they are what they are. I run `FindAllMarkers`, which runs a statistical test across every single cell type. It looks for genes that are highly expressed in one group but completely turned off everywhere else. I then save this massive table of genes as a CSV file for downstream use.
+Having identified the major cell populations, I next sought to statistically validate these annotations by uncovering their specific transcriptomic signatures. 
+
+I executed a differential expression algorithm (`FindAllMarkers`) to test every single gene across all cell types. This identifies the specific biomarkers that are significantly upregulated in one cluster while remaining repressed in all others, generating a comprehensive statistical matrix of cellular identity.
 
 ```r
-# Set the active identity to our new biological cell types
+# Set the active identity to the new biological cell types
 Idents(pbmc) <- "cell_type"
 
 # Find all differentially expressed marker genes for every cell type
 markers <- FindAllMarkers(pbmc, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
 
-# Save the full table to a CSV file
+# Save the full table to a CSV file for rigorous downstream analysis
 write.csv(markers, "../results/04_annotated_marker_genes.csv", row.names = FALSE)
 ```
 
 ---
 
-## 4. Visualizing the Biomarkers (Heatmap)
+## 4. Visualizing Transcriptomic Signatures (Heatmap)
 
-To visually prove that my cell types are correct, I grab the top 5 most highly expressed genes for each group and plot them on a heatmap. 
+To visually confirm the accuracy of the differential expression analysis, I extracted the top 5 most significantly upregulated genes for each cell type and plotted their expression profiles across the dataset.
 
-You must be careful here: because some cell types (like T Cells) have thousands of cells and others have very few, a normal heatmap will completely crush the small clusters out of existence. I fixed this by using the `downsample = 30` parameter, which forces the plot to sample exactly 30 cells from each group. This guarantees that every single cell type has the exact same visual width on the graph.
+Because clusters like T cells contain thousands of cells while others contain far fewer, a standard heatmap would visually misrepresent the smaller populations. To resolve this, I applied a strict downsampling parameter (`downsample = 30`), ensuring that every biological cell type is represented by an equal graphical width, standardizing the comparative visualization.
 
 ```r
 # Extract the top 5 marker genes per cluster
@@ -96,16 +98,16 @@ DoHeatmap(pbmc_downsampled, features = top5$gene, size = 4, angle = 90) +
 
 ---
 
-## 5. Final Export and Cloud Dashboard Fix
+## 5. Final Export and Cloud Deployment Considerations
 
-Finally, I save the fully annotated object. 
+The final step is to save the fully annotated pipeline output. 
 
-I actually had to do some serious troubleshooting here. My main `.rds` file was 274MB. When I tried to push this to GitHub to host my interactive Shiny dashboard, GitHub blocked it because of their 100MB file limit. Because it wouldn't upload, my dashboard completely crashed. 
+During the initial deployment of this project, I encountered a critical infrastructure issue: the standard `.rds` file was 274MB, which directly violated GitHub's 100MB strict file size limit, causing the cloud-hosted Shiny dashboard to crash.
 
-To fix this, you should use the `DietSeurat` function. It strips out all the massive background math matrices that we no longer need, shrinking the file down to just 10MB while keeping the cell names and UMAP coordinates perfectly intact for the dashboard.
+To resolve this deployment failure, I utilized the `DietSeurat` function. This algorithmically strips the massive, intermediate assay matrices from the object while perfectly preserving the final cellular annotations and 2D UMAP coordinates. This successfully compressed the final object to ~10MB, allowing for seamless deployment.
 
 ```r
-# Save the full annotated object for local use
+# Save the full annotated object for local analysis
 saveRDS(pbmc, "../results/03_pbmc_annotated.rds")
 
 # Shrink the object down to bypass GitHub's 100MB limit for cloud deployment

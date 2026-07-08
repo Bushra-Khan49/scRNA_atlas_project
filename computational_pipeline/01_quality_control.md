@@ -115,3 +115,8 @@ Because processing large genomic matrices is computationally expensive, I saved 
 # Save the filtered Seurat object as an R data file
 saveRDS(pbmc, "../results/01_pbmc_filtered.rds")
 ```
+
+---
+
+### Phase 1 Complete
+**Conclusion & Next Steps:** We have successfully loaded the raw dataset and applied strict biological cutoffs to filter out necrotic cells and empty droplets. With a clean, highly viable matrix of human immune cells now saved to disk, we are ready to proceed to the next stage of the pipeline. In **Phase 2: Normalization and Clustering**, we will take these healthy cells, normalize their sequencing depths, and mathematically group them into distinct transcriptomic islands.

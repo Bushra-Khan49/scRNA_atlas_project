@@ -124,3 +124,8 @@ saveRDS(pbmc, "../results/03_pbmc_annotated.rds")
 slim <- DietSeurat(pbmc, counts=TRUE, data=TRUE, scale.data=FALSE, dimreducs=c("umap"))
 saveRDS(slim, "../results/03_pbmc_slim.rds")
 ```
+
+---
+
+### Phase 3 Complete
+**Conclusion & Next Steps:** The computational pipeline is now officially complete. We have successfully processed the raw data, clustered the cells, mapped them to their true biological identities, and statistically proven those identities by extracting their unique biomarkers. For a comprehensive, high-level biological summary of everything we have accomplished, please proceed to the **[Final Results and Biological Interpretations](04_final_results_and_interpretations.md)** file.

@@ -16,7 +16,7 @@ Human cells express ~20,000 genes, representing 20,000 mathematical dimensions.
 
 ### 3. Differential Expression & Biomarker Annotation
 I utilized the Wilcoxon Rank Sum test via Seurat's `FindAllMarkers` algorithm to identify statistically significant biomarker genes that define each cluster. 
-- *Note on Housekeeping Genes:* Basic survival genes (e.g., *ATG12*, an autophagy-related gene) are expressed across all cells. They are mathematically excluded from my Biomarker tables because they do not uniquely separate distinct immune identities, proving the pipeline's statistical rigor.
+- *Note on Housekeeping Genes:* Basic survival genes (e.g., *ATG12*, an autophagy-related gene) are expressed across all cells. They are excluded from my Biomarker tables because they do not uniquely separate distinct immune identities, proving the pipeline's statistical rigor.
 - Clusters were then biologically annotated into true cell identities (e.g., T-cells, B-cells, Monocytes) using reference mapping.
 
 ## 🚀 The Interactive Dashboard

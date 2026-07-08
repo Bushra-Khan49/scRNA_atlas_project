@@ -1,0 +1,81 @@
+---
+title: "Single-Cell RNA-Seq Quality Control"
+author: "Bushra Khan"
+output: html_document
+---
+
+# Introduction and Environment Setup
+
+Before starting the analysis, I needed to ensure my environment was properly set up. Working with single-cell data in R requires a massive amount of dependencies, and I immediately ran into issues.
+
+When I first tried to set up the environment, I struggled with installing `Seurat` and `SingleCellExperiment` because Bioconductor packages often have strict version requirements. I had to explicitly use `BiocManager::install("SingleCellExperiment")` to resolve a crashing issue downstream during annotation. 
+
+Always ensure your `renv` is synced!
+
+```{r setup, include=FALSE}
+# Load required libraries
+library(Seurat)
+library(tidyverse)
+```
+
+# Step 1: Loading the Data
+
+I downloaded the raw 10x Genomics PBMC dataset. The data is extremely noisy, so I immediately initialized a Seurat object. I set two baseline thresholds right out of the gate:
+- `min.cells = 3`: Filtering out any genes that aren't expressed in at least 3 cells.
+- `min.features = 200`: Filtering out any cells with fewer than 200 genes (these are almost certainly empty fluid droplets, not real cells).
+
+```{r load_data}
+mat_path <- "../data/pbmc3k/filtered_gene_bc_matrices/hg19"
+counts   <- Read10X(data.dir = mat_path)
+
+pbmc <- CreateSeuratObject(counts = counts, project = "pbmc3k",
+                            min.cells = 3, min.features = 200)
+```
+
+# Step 2: Mitochondrial Quality Control
+
+I needed to identify dying or stressed cells. When a cell ruptures, its cytoplasmic RNA leaks out, but the mitochondrial RNA remains trapped inside. Therefore, a high percentage of mitochondrial RNA indicates a dead cell. 
+
+I used a regex pattern `^MT-` to calculate this percentage.
+
+```{r mt_qc}
+pbmc[["percent.mt"]] <- PercentageFeatureSet(pbmc, pattern = "^MT-")
+```
+
+# Step 3: Visualizing the Unfiltered Distributions
+
+Before I cut the data, I wanted to visualize the distributions to see what I was dealing with. I generated Violin and Scatter plots, forcing custom aesthetics to make the metrics distinct.
+
+```{r visualize}
+VlnPlot(pbmc, features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol = 3, 
+        pt.size = 0.1, cols = "#3A86FF") +
+  theme(axis.title.x = element_blank(), axis.text.x = element_blank(), axis.ticks.x = element_blank()) +
+  labs(title = "Quality Control Distributions (Pre-Filter)", y = "Count / Percentage")
+ggsave("../figures/01_qc_violin.png", width = 10, height = 5, bg = "white")
+
+FeatureScatter(pbmc, feature1 = "nCount_RNA", feature2 = "percent.mt", pt.size = 0.5, cols = "#FF006E") +
+  labs(title = "Mitochondrial RNA vs Total RNA", 
+       x = "Total RNA Molecules Detected (nCount)", 
+       y = "Mitochondrial Percentage (%)") +
+  theme(legend.position = "none")
+ggsave("../figures/01_qc_scatter.png", width = 6, height = 5, bg = "white")
+```
+
+# Step 4: Applying the Biological Cutoffs
+
+Based on the distributions above, I established my filtering thresholds:
+1. `nFeature_RNA > 200`: Drops empty fluid droplets.
+2. `nFeature_RNA < 2500`: Drops cell doublets/multiplets.
+3. `percent.mt < 5`: Drops dead/dying cells.
+
+```{r subset}
+pbmc <- subset(pbmc, subset = nFeature_RNA > 200 & nFeature_RNA < 2500 & percent.mt < 5)
+```
+
+# Step 5: Save Checkpoint
+
+I saved this filtered object so I don't have to re-run QC every time I tweak the downstream clustering algorithms.
+
+```{r save}
+saveRDS(pbmc, "../results/01_pbmc_filtered.rds")
+```

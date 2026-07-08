@@ -1,66 +1,61 @@
-# Single-Cell RNA-Seq Transcriptomics Explorer (PBMC) 🧬
+# Single-Cell RNA-Seq Transcriptomics Explorer (PBMC)
 
-![Shiny App Demo](https://raw.githubusercontent.com/plotly/plotly.js/master/logo/plotlyjs-logo.svg) 
-*(Note: Replace with a screenshot of the actual dashboard!)*
+This repository contains a full end-to-end Computational Biology pipeline and an interactive visualization dashboard built in R. It processes raw Peripheral Blood Mononuclear Cell (PBMC) scRNA-seq data through quality control, normalization, dimensionality reduction, cell-type annotation, and deploys it as a premium interactive SaaS-style Shiny application.
 
-## 🚀 Why I Built This
-I built this as a solo, deep-dive individual project to pressure-test my R programming skills and prove my ability to handle end-to-end Computational Biology workflows. I wanted to go beyond just running standard tutorials—I wanted to take raw, noisy 10x Genomics sequencing data and manually sculpt it into a stunning, production-ready SaaS dashboard that anyone can explore. 
+## 🧬 Biological Rationale & Methods
 
-This repository documents my entire analytical journey: from the messy early stages of data wrangling, to the complex mathematics of dimensionality reduction, all the way to deploying a responsive Shiny UI.
+### 1. Quality Control (QC)
+In single-cell RNA sequencing, it is vital to mathematically remove dead, dying, or ruptured cells before analysis. 
+- **Mitochondrial Threshold (< 5%):** Apoptotic or lysed cells leak their cytoplasmic RNA, leaving behind a disproportionate ratio of mitochondrial RNA (which is protected inside the mitochondrial membrane). We strictly filtered out cells with `> 5%` mitochondrial RNA.
+- **Gene Count Threshold (200 < nFeature_RNA < 2500):** We excluded empty droplets (cells expressing very few genes) and doublets (two cells captured in one droplet, resulting in abnormally high gene counts).
 
----
+### 2. Dimensionality Reduction (PCA & UMAP)
+Human cells express ~20,000 genes, representing 20,000 mathematical dimensions. 
+- **PCA (Principal Component Analysis):** We reduced this to the top 10 most statistically variable principal components to capture the highest biological variance.
+- **UMAP (Uniform Manifold Approximation and Projection):** We compressed the 10 dimensions down to 2D space to visually cluster biologically identical immune cells.
 
-## 🔬 The Step-by-Step Analytical Walkthrough
+### 3. Differential Expression & Biomarker Annotation
+We utilized the Wilcoxon Rank Sum test via Seurat's `FindAllMarkers` algorithm to identify statistically significant biomarker genes that define each cluster. 
+- *Note on Housekeeping Genes:* Basic survival genes (e.g., *ATG12*, an autophagy-related gene) are expressed across all cells. They are mathematically excluded from our Biomarker tables because they do not uniquely separate distinct immune identities, proving the pipeline's statistical rigor.
+- Clusters were then biologically annotated into true cell identities (e.g., T-cells, B-cells, Monocytes).
 
-Here is exactly how I processed the data, and the biological reasoning behind every single decision I made.
+## 🚀 The Interactive Dashboard
 
-### Phase 1: Quality Control (QC) & Data Scrubbing
-You can't do good science with garbage data. When sequencing cells, some cells die, rupture, or get trapped together (doublets). I needed to clean this up mathematically.
+The results are compiled into a premium R Shiny Dashboard built with `bslib` and `plotly`.
 
-- **The Mitochondrial Cutoff (`< 5%`):** When a cell ruptures, its cytoplasmic RNA leaks out, but the RNA trapped inside its mitochondria remains. Therefore, a massive spike in mitochondrial RNA means the cell is dying. I used a regular expression (`^MT-`) to calculate the mitochondrial percentage of every cell and aggressively filtered out anything above 5%.
-- **The Gene Count Threshold (200 - 2500):** If a cell had less than 200 genes, it was likely an empty droplet of fluid. If it had more than 2,500, it was probably two cells stuck together. I trashed both.
+### Features:
+- **Liquid Premium UI:** Fully responsive dashboard featuring dynamic Light/Dark mode tailored to high-end SaaS standards.
+- **Server-Side Selectize:** Employs `server = TRUE` to instantly load all 13,000+ sequenced genes without lagging the browser.
+- **Dynamic Plotly WebGL:** Renders thousands of individual single cells effortlessly with custom color palettes and interactive hover states.
 
-![QC Metrics](figures/01_qc_violin.png)
+## 🛠️ Reproducible Environment (`renv`)
 
-### Phase 2: Dimensionality Reduction (PCA & UMAP)
-Human blood cells express roughly 20,000 genes. Trying to visualize a 20,000-dimensional matrix is impossible. 
+This project is fully production-ready and reproducible. All dependencies (Seurat, Shiny, Bslib, Plotly, DT) are tracked via `renv`.
 
-- **PCA:** First, I ran Principal Component Analysis to compress those 20,000 dimensions down to the top 10 vectors of highest mathematical variance.
-- **UMAP:** Then, I used UMAP (Uniform Manifold Approximation and Projection) to crush those 10 dimensions down to a 2D map. This allows us to visually cluster cells that share similar biological "fingerprints." 
+### How to Run Locally
 
-![UMAP Clusters](figures/02_umap_clusters.png)
+1. Clone this repository.
+2. Open the project in RStudio.
+3. Restore the exact package environment:
+   ```R
+   renv::restore()
+   ```
+4. Launch the dashboard:
+   ```R
+   shiny::runApp("shiny_app", launch.browser = TRUE)
+   ```
 
-### Phase 3: Differential Expression & Biomarker Discovery
-Once the cells were clustered in 2D space, I needed to figure out what they actually were. I ran a **Wilcoxon Rank Sum test** (`FindAllMarkers`) to find the statistically significant genes defining each cluster.
+## 📂 Project Architecture
 
-> **💡 Fun Biology Fact:** During this phase, I noticed genes like *ATG12* (an autophagy gene) were completely missing from my marker tables, despite being highly expressed in the raw data. Why? Because *ATG12* is a basic survival "housekeeping" gene. Every cell expresses it. Because it doesn't uniquely define a *single* cell type, my algorithm correctly threw it out!
-
-Finally, I used reference-based automated annotation (`SingleR` + `celldex`) to map these clusters to true human immune identities (T-cells, B-cells, etc.).
-
-![Annotated Cell Types](figures/03_umap_celltype.png)
-![Marker Heatmap](figures/03_marker_heatmap.png)
-
-### Phase 4: The Interactive Dashboard
-I didn't just want a static report; I wanted a fully interactive explorer. I built a premium R Shiny app utilizing `bslib` for a stunning Light/Dark mode toggle and `plotly` for WebGL-powered interactive charts that render thousands of cells without lagging the browser. 
-
----
-
-## 🛠️ Challenges & Troubleshooting
-This project definitely threw some curveballs at me. Here is how I solved them:
-
-1. **The C++ Compilation Nightmare (Phase 1):** While installing Seurat and `hdf5r`, I ran into brutal Mac-specific C++ compiler errors because R was trying to build the packages from source without the correct Fortran/C binaries. I had to step out of R, configure my system's Homebrew compiler pathways, and force binary installations to finally get the environment stabilized.
-2. **Bioconductor Dependency Hell (Phase 3):** Getting `SingleR` and `celldex` to talk to each other was tricky. Bioconductor has incredibly strict versioning rules, and mismatched dependencies were causing silent failures when querying the Human Primary Cell Atlas. I ended up completely wiping my package cache and orchestrating a fresh installation via `BiocManager` to ensure version harmony.
-3. **The 'FetchData' UI Crash (Phase 4):** When building the Shiny dashboard, I noticed that if a user rapidly deleted the gene name from the search box, the app would instantly crash. The server was trying to search the Seurat object for a blank string (`""`). I patched this by injecting a strict validation logic (`req(input$gene %in% rownames(pbmc))`) to ensure the server only attempts to render physically existing genes.
-4. **GitHub's 100MB File Limit:** Single-cell datasets are massive. My finalized `.rds` files were nearly 300MB! When I tried to push this to GitHub, the terminal locked up. I had to manually intercept the Git index, untrack the massive matrices using `git rm --cached`, and rewrite my `.gitignore` to protect the repository from crashing while still preserving my actual code.
-
----
-
-## 💻 Try it Yourself (Reproducibility)
-
-I locked all 231 dependencies using `renv` so this project is 100% reproducible. 
-
-To run this on your own machine:
-1. Clone the repo: `git clone https://github.com/Bushra-Khan49/scRNA_atlas_project.git`
-2. Open it in RStudio.
-3. Restore the environment: `renv::restore()`
-4. Run the app: `shiny::runApp("shiny_app")`
+```
+scRNA_atlas_project/
+├── renv/                  # Isolated reproducible R environment
+├── renv.lock              # Package versions and hashes
+├── data/                  # Raw cellranger output (matrix, features, barcodes)
+├── scripts/               # 01_qc.R, 02_normalize.R, 03_annotate.R
+├── results/               # Compiled .rds files and biomarker CSVs
+├── shiny_app/
+│   ├── app.R              # Full Dashboard architecture
+│   └── www/               # Custom CSS (custom.css)
+└── README.md              # Documentation
+```

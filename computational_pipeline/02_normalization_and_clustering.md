@@ -39,6 +39,9 @@ ElbowPlot(pbmc, ndims = 30) +
   labs(title = "Figure 3: PCA Elbow Plot", subtitle = "Variance explained by each Principal Component", x = "Principal Component", y = "Standard Deviation")
 ```
 
+![Figure 3: PCA Variance (Elbow Plot)](../figures/02_elbow.png)
+
+
 ---
 
 ## Grouping the Cells (Clustering)
@@ -69,6 +72,9 @@ DimPlot(pbmc, reduction = "umap", label = TRUE, label.size = 5, repel = TRUE, pt
         legend.text = element_text(face = "bold")) +
   labs(title = "Figure 4: Mathematical Clustering", subtitle = "UMAP projection of K-Nearest Neighbor louvain clusters", x = "UMAP Dimension 1", y = "UMAP Dimension 2")
 ```
+
+![Figure 4: Mathematical Clustering](../figures/02_umap_clusters.png)
+
 
 ---
 

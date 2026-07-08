@@ -44,6 +44,9 @@ DimPlot(pbmc, group.by = "cell_type", label = FALSE, pt.size = 0.5) +
   labs(title = "Figure 5: Biological Cell Type Map", subtitle = "UMAP projection mapped via SingleR algorithmic annotation", x = "UMAP Dimension 1", y = "UMAP Dimension 2")
 ```
 
+![Figure 5: Biological Cell Type Map](../figures/03_umap_celltype.png)
+
+
 ---
 
 ## Finding the Marker Genes
@@ -73,6 +76,9 @@ DoHeatmap(pbmc_downsampled, features = top5$gene, size = 4, angle = 90) +
         plot.title = element_text(face = "bold", size = 14)) +
   labs(title = "Figure 6: Biomarker Expression Heatmap", subtitle = "Top 5 differentially expressed genes per biological cell type")
 ```
+
+![Figure 6: Biomarker Expression Heatmap](../figures/03_marker_heatmap.png)
+
 
 ---
 

@@ -48,6 +48,9 @@ VlnPlot(pbmc, features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol = 3
   labs(title = "Figure 1: Quality Control Metrics", subtitle = "Distribution of RNA counts and Mitochondrial percentage", y = "Count / Percentage")
 ```
 
+![Figure 1: Quality Control Metrics](../figures/01_qc_violin.png)
+
+
 **Figure 2: Mitochondrial vs Total RNA**
 This scatter plot confirmed the same thing. The dots in the upper left corner had hardly any real RNA but tons of mitochondrial RNA, meaning they were definitely dead.
 
@@ -59,6 +62,9 @@ FeatureScatter(pbmc, feature1 = "nCount_RNA", feature2 = "percent.mt", pt.size =
         plot.title = element_text(face = "bold", size = 14)) +
   labs(title = "Figure 2: Mitochondrial vs Total RNA", subtitle = "Scatter plot identifying stressed/dying cells (high MT%)", x = "Total RNA Molecules Detected", y = "Mitochondrial Percentage (%)")
 ```
+
+![Figure 2: Mitochondrial vs Total RNA](../figures/01_qc_scatter.png)
+
 
 ---
 

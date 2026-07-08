@@ -1,6 +1,8 @@
-# Phase 3: Biological Annotation and Biomarker Discovery
+This file covers the final steps of the analysis. At this point, the cells were clustered into groups, but I didn't know what kind of cells they actually were. I used an automated tool to compare my clusters against a known database to figure out if they were T Cells, B Cells, etc., and then I found the specific genes that made each cell type unique.
 
-**Overview**: In Phase 2, the cells were grouped mathematically into anonymous clusters based on transcriptomic similarity. In this final phase, my goal was to assign real biological identities (e.g., T Cells, B Cells, Monocytes) to these groups, and to extract the specific biomarker genes driving those identities.
+---
+
+# Phase 3: Cell Type Annotation and Finding Markers
 
 ```r
 library(Seurat)
@@ -10,28 +12,28 @@ library(celldex)
 library(tidyverse)
 ```
 
-## Algorithmic Biological Annotation
-Historically, annotating single-cell data involved manually running differential expression, staring at marker genes, and subjectively assigning cell types. This is highly prone to human error and bias.
+---
 
-To ensure strict scientific reproducibility, I used the `SingleR` algorithmic pipeline. `SingleR` compares the transcriptomic profile of my cells against the deeply curated Human Primary Cell Atlas (HPCA) database, automatically assigning statistically significant biological labels.
+## Figuring Out the Cell Types
+Instead of manually guessing what cells were in each cluster by looking at genes one by one (which takes forever and is easy to mess up), I used a package called `SingleR`. It takes my cells and checks them against the Human Primary Cell Atlas database to automatically assign the correct names.
 
 ```r
 pbmc <- readRDS("../results/02_pbmc_clustered.rds")
 
-# Pull the curated reference database
 ref <- celldex::HumanPrimaryCellAtlasData()
 sce <- as.SingleCellExperiment(pbmc)
 
-# Run the algorithmic prediction
 pred <- SingleR(test = sce, ref = ref, labels = ref$label.main)
 pbmc$cell_type <- pred$labels
 ```
 
-## Results & Interpretation: Biologically Annotated UMAP
-**Figure 5: Biological Cell Type Map**
-I mapped the algorithm's predictions back onto my original Seurat object. 
+---
 
-**Visual Fix**: When I initially plotted this, having the text labels directly on top of the cell clusters made the diagram look messy and unreadable. I completely removed the on-plot text and built a bold, highly readable legend on the right side. This preserves the purity of the data points while remaining perfectly decipherable. We can clearly observe the massive CD4+ and CD8+ T Cell populations, along with distinct islands of B Cells and Monocytes.
+## What the Final Labeled Map Looked Like
+**Figure 5: Biological Cell Type Map**
+After running the annotation, I mapped the real cell names back onto my UMAP plot. 
+
+**Troubleshooting Note**: When I first made this plot, Seurat tried to put the text labels directly on top of the dots. It looked incredibly messy and overlapping, and I couldn't read the smaller clusters. I fixed it by turning the labels off on the plot itself and instead moving them to a nice, bold legend on the side so the actual data points are clearly visible.
 
 ```r
 DimPlot(pbmc, group.by = "cell_type", label = FALSE, pt.size = 0.5) +
@@ -42,8 +44,10 @@ DimPlot(pbmc, group.by = "cell_type", label = FALSE, pt.size = 0.5) +
   labs(title = "Figure 5: Biological Cell Type Map", subtitle = "UMAP projection mapped via SingleR algorithmic annotation", x = "UMAP Dimension 1", y = "UMAP Dimension 2")
 ```
 
-## Biomarker Discovery (Differential Expression)
-Now that the cells have real biological names, I ran a Wilcoxon Rank Sum test across the annotated groups to find the "biomarkers"—the specific genes that are highly expressed in one cell type but turned off in all the others.
+---
+
+## Finding the Marker Genes
+Now that I knew what the cells were, I wanted to find the exact genes that were driving those identities. I ran a test across all the cell types to find the genes that were highly turned on in one specific cell type but turned off everywhere else. I saved these genes into a CSV file.
 
 ```r
 Idents(pbmc) <- "cell_type"
@@ -51,17 +55,17 @@ markers <- FindAllMarkers(pbmc, only.pos = TRUE, min.pct = 0.25, logfc.threshold
 write.csv(markers, "../results/04_annotated_marker_genes.csv", row.names = FALSE)
 ```
 
-## Results & Interpretation: Biomarker Expression Heatmap
-**Figure 6: Biomarker Expression Heatmap**
-To prove the differential expression was successful, I extracted the top 5 most defining genes for each biological cell type and plotted them.
+---
 
-**Visual Fix**: Previously, I plotted the heatmap *before* annotation, resulting in a meaningless legend (0, 1, 2). Furthermore, rare cell types (like Platelets) had their columns physically crushed out of existence by massive populations (like T Cells). 
-By moving the heatmap to *after* the biological annotation, and applying a strict `downsample = 30` parameter, I guaranteed that every single cell type receives the exact same column width. The biological names are bolded and perfectly readable. The bright yellow blocks definitively prove the specificity of our top 5 biomarkers per cell type.
+## Visualizing the Marker Genes
+**Figure 6: Biomarker Expression Heatmap**
+To double check that the markers were right, I grabbed the top 5 genes for each cell type and plotted them on a heatmap. 
+
+**Troubleshooting Note**: I originally tried plotting the heatmap *before* the cells were annotated, which just gave me a legend with meaningless numbers like 0, 1, and 2. Also, because some clusters had tons of cells (like T Cells) and others had very few (like Platelets), the columns for the small clusters got completely squished and were impossible to see. I fixed this by running the heatmap *after* annotation so the real names show up, and I forced the plot to only sample exactly 30 cells from each group so the columns all have the exact same width.
 
 ```r
 top5 <- markers %>% group_by(cluster) %>% slice_max(avg_log2FC, n = 5)
 
-# Downsample to exactly 30 cells per biological identity to ensure perfect visual balance
 pbmc_downsampled <- subset(pbmc, downsample = 30)
 
 DoHeatmap(pbmc_downsampled, features = top5$gene, size = 4, angle = 90) +
@@ -70,14 +74,16 @@ DoHeatmap(pbmc_downsampled, features = top5$gene, size = 4, angle = 90) +
   labs(title = "Figure 6: Biomarker Expression Heatmap", subtitle = "Top 5 differentially expressed genes per biological cell type")
 ```
 
-## Final Data Checkpoint
-I saved the fully processed object. 
-**Deployment Optimization**: I generated both the full 274MB version and a highly compressed "slim" 10MB version (stripping out raw matrices and preserving only UMAP coordinates/identities). This was necessary because the 274MB file breached GitHub's 100MB limit, causing an out-of-memory crash when deploying the final Shiny Dashboard to Posit Connect Cloud.
+---
+
+## Final Save and Dashboard Fix
+I saved the final fully-annotated data object.
+
+**Troubleshooting Note**: This final `.rds` file ended up being 274MB. When I tried to push this to GitHub to host my Shiny dashboard, it completely failed because GitHub has a strict 100MB file limit. Because the file didn't upload, my dashboard couldn't find the data and crashed. I fixed this by using the `DietSeurat` function to strip out all the heavy background matrices I didn't need for the dashboard, shrinking the file down to a tiny 10MB while keeping the cell names and UMAP coordinates intact.
 
 ```r
 saveRDS(pbmc, "../results/03_pbmc_annotated.rds")
 
-# Generate slim version for Cloud deployment
 slim <- DietSeurat(pbmc, counts=TRUE, data=TRUE, scale.data=FALSE, dimreducs=c("umap"))
 saveRDS(slim, "../results/03_pbmc_slim.rds")
 ```

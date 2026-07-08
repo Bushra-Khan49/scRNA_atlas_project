@@ -1,10 +1,10 @@
+This file covers the very first part of my analysis. I started by getting the raw single-cell data, loading it into R, and doing some basic quality checks to filter out bad or dying cells before doing any real analysis.
+
+---
+
 # Phase 1: Quality Control
 
-**Overview**: Single-cell RNA sequencing data is inherently noisy. Before conducting any downstream clustering, we must rigorously filter out droplets containing no real cells (empty droplets), droplets containing multiple cells (doublets), and dying cells whose membranes have ruptured.
-
-## Environment Setup
-Setting up the environment for scRNA-seq analysis in R is notoriously tricky due to strict Bioconductor versioning. 
-**Troubleshooting Note**: When installing dependencies, `SingleCellExperiment` continuously caused crashes during the annotation phase because the default CRAN version was out of date. I resolved this by explicitly forcing the Bioconductor version via `BiocManager::install("SingleCellExperiment")`. Always ensure your `renv` is synced!
+Before doing anything, I set up my environment. I loaded Seurat (which is basically the standard for this kind of data) and the tidyverse package to help with making plots and handling data.
 
 ```r
 library(Seurat)
@@ -12,10 +12,10 @@ library(tidyverse)
 library(ggplot2)
 ```
 
+---
+
 ## Loading the Raw Data
-I loaded the raw 10x Genomics PBMC dataset and initialized a Seurat object. Right at initialization, I applied two extremely lenient baseline filters to immediately discard massive amounts of noise:
-- `min.cells = 3`: Removes any gene that isn't expressed in at least 3 cells across the entire dataset.
-- `min.features = 200`: Removes any cell with fewer than 200 distinct genes detected (almost certainly empty fluid droplets).
+I downloaded the raw dataset from 10x Genomics. The files came as raw matrices, which I then loaded into R. Since single-cell data has a lot of empty droplets (which happen during the sequencing process), I told Seurat to immediately drop anything that didn't look like a real cell just to save memory. 
 
 ```r
 mat_path <- "../data/pbmc3k/filtered_gene_bc_matrices/hg19"
@@ -24,19 +24,22 @@ counts   <- Read10X(data.dir = mat_path)
 pbmc <- CreateSeuratObject(counts = counts, project = "pbmc3k", min.cells = 3, min.features = 200)
 ```
 
-## Mitochondrial Percentage (Cell Health)
-When a cell is stressed or dying, its membrane ruptures and cytoplasmic RNA leaks out, but the mitochondria remain trapped inside. Thus, an unusually high ratio of mitochondrial RNA to total RNA is the standard biomarker for a dead cell.
-I calculated this percentage by searching for all genes starting with `MT-`.
+---
+
+## Checking for Dead Cells (Mitochondrial RNA)
+One of the biggest issues with this kind of data is that dying cells leak their regular RNA but keep their mitochondrial RNA. So, if a cell has a high percentage of mitochondrial genes, it's usually dead or dying. I calculated this percentage by looking for genes that start with "MT-".
 
 ```r
 pbmc[["percent.mt"]] <- PercentageFeatureSet(pbmc, pattern = "^MT-")
 ```
 
-## Results & Interpretation: Pre-Filter Quality Assessment
-Before applying strict cutoffs, I plotted the raw distributions.
+---
+
+## What the Data Looked Like Before Filtering
+I wanted to check what the data actually looked like before I started dropping cells. I made some plots to see the distribution of the genes and the mitochondrial percentage.
 
 **Figure 1: Quality Control Metrics**
-This violin plot shows the spread of features (unique genes), counts (total RNA molecules), and the mitochondrial percentage per cell. We can clearly see a dense cluster of healthy cells, but a long "tail" of dying cells with >10% MT.
+This plot showed me that most cells were healthy and grouped together, but there was a clear group of dying cells with really high mitochondrial percentages that I needed to get rid of.
 
 ```r
 VlnPlot(pbmc, features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol = 3, pt.size = 0.1, cols = "#3A86FF") +
@@ -46,7 +49,7 @@ VlnPlot(pbmc, features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol = 3
 ```
 
 **Figure 2: Mitochondrial vs Total RNA**
-This scatter plot maps the total RNA counts against the MT percentage. The cells in the upper-left quadrant (low RNA, high MT) are definitively dead and must be removed.
+This scatter plot confirmed the same thing. The dots in the upper left corner had hardly any real RNA but tons of mitochondrial RNA, meaning they were definitely dead.
 
 ```r
 FeatureScatter(pbmc, feature1 = "nCount_RNA", feature2 = "percent.mt", pt.size = 0.5, cols = "#FF006E") +
@@ -57,18 +60,19 @@ FeatureScatter(pbmc, feature1 = "nCount_RNA", feature2 = "percent.mt", pt.size =
   labs(title = "Figure 2: Mitochondrial vs Total RNA", subtitle = "Scatter plot identifying stressed/dying cells (high MT%)", x = "Total RNA Molecules Detected", y = "Mitochondrial Percentage (%)")
 ```
 
-## Applying Biological Cutoffs
-Based on the visual evidence above, I applied the following strict biological cutoffs:
-1. `nFeature_RNA > 200`: Confirming we only keep true cells.
-2. `nFeature_RNA < 2500`: Filtering out doublets (two cells trapped in one droplet will have an impossibly high gene count).
-3. `percent.mt < 5`: Dropping the dead cells identified in Figure 2.
+---
+
+## Filtering Out the Bad Data
+**Troubleshooting Note**: Figuring out the exact cutoff numbers was a bit tricky. If I was too strict, I'd lose too much good data. If I was too loose, the downstream analysis would be noisy. Based on the plots, I decided to filter out anything with more than 5% mitochondrial RNA, and dropped cells with too many or too few genes to avoid doublets (two cells stuck together) and empty droplets.
 
 ```r
 pbmc <- subset(pbmc, subset = nFeature_RNA > 200 & nFeature_RNA < 2500 & percent.mt < 5)
 ```
 
-## Saving Checkpoint
-I saved the filtered matrix. In large-scale single-cell pipelines, you must save checkpoints after QC to avoid re-running intensive filtering algorithms every time you tweak a downstream parameter.
+---
+
+## Saving the Clean Data
+Since processing the data takes time, I saved this clean version so I wouldn't have to keep re-running the filtering steps every time I wanted to test something in the next phase.
 
 ```r
 saveRDS(pbmc, "../results/01_pbmc_filtered.rds")

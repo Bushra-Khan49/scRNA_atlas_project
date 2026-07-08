@@ -1,0 +1,272 @@
+/* Premium typography and styling */
+body {
+    font-family: 'Outfit', sans-serif !important;
+    letter-spacing: -0.01em;
+}
+
+/* Distinct Headings vs Body Text */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 800 !important;
+    letter-spacing: -0.02em;
+}
+
+/* Navbar Title Fix */
+.navbar-brand {
+    font-size: 1.5rem !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.02em;
+    color: white !important;
+    opacity: 1 !important;
+}
+
+/* Sidebar "Understanding the Data" styling */
+.sidebar-explanation {
+    margin-top: 1rem;
+}
+.sidebar-explanation h5 {
+    color: var(--bs-primary);
+    font-size: 1.1rem;
+    margin-top: 1.5rem;
+    margin-bottom: 0.3rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.sidebar-explanation p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--bs-secondary-color);
+    margin-bottom: 1rem;
+    font-weight: 400;
+}
+
+/* Light/Dark Mac-style Toggle Switch */
+.mac-switch-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-right: 15px;
+}
+.mac-switch-label {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+.mac-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 26px;
+}
+.mac-switch input { 
+    opacity: 0; 
+    width: 0; 
+    height: 0; 
+}
+.mac-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #555;
+    transition: .4s cubic-bezier(0.4, 0.0, 0.2, 1);
+    border-radius: 26px;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+}
+.mac-slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s cubic-bezier(0.4, 0.0, 0.2, 1);
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+input:checked + .mac-slider {
+    background-color: #3A86FF;
+}
+input:checked + .mac-slider:before {
+    transform: translateX(24px);
+}
+
+/* Custom Metric Cards */
+.custom-metric-card {
+    display: flex;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    border-radius: 12px;
+    gap: 1.5rem;
+    color: white;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    background-size: 200% 200%;
+    animation: liquid-gradient 10s ease infinite;
+    height: 100%;
+    min-height: 120px;
+    width: 100%;
+}
+.custom-metric-card:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25), 0 5px 15px rgba(0,0,0,0.1);
+}
+.metric-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 90px;
+    width: 90px;
+    flex-shrink: 0;
+    border-right: 3px solid rgba(255,255,255,0.3);
+    padding-right: 1.5rem;
+}
+.metric-icon { font-size: 2rem; margin-bottom: 0.2rem; }
+.metric-value { font-size: 1.8rem; font-weight: 800; line-height: 1; }
+.metric-right { display: flex; flex-direction: column; }
+.metric-title { font-size: 1.15rem; font-weight: 800; margin-bottom: 0.3rem; letter-spacing: -0.01em; }
+.metric-info { font-size: 0.85rem; opacity: 0.95; line-height: 1.4; font-weight: 400; }
+
+.card-primary { background-image: linear-gradient(-45deg, #3A86FF, #4361ee, #3f37c9); }
+.card-secondary { background-image: linear-gradient(-45deg, #8338EC, #7209b7, #560bad); }
+.card-success { background-image: linear-gradient(-45deg, #2A9D8F, #21867a, #1a6d63); }
+
+@keyframes liquid-gradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Card Headers */
+.card-header {
+    background-color: #1a2634 !important; /* Dark Blue-Grey */
+    color: #60a5fa !important; /* Light blue text */
+    border-bottom: 1px solid #2b3e50 !important;
+    font-weight: 800 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* DataTables Global (Dark Mode defaults) */
+table.dataTable thead th {
+    background-color: #2b3e50 !important;
+    color: #ffffff !important;
+    border-bottom: 2px solid #3A86FF !important;
+}
+
+/* DataTables Search Icon Injection */
+.dataTables_filter input {
+    padding-left: 30px !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23ffffff' class='bi bi-search' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: 8px center !important;
+    background-size: 14px !important;
+}
+
+/* =========================================
+   LIGHT MODE OVERRIDES 
+   ========================================= */
+html[data-bs-theme="light"] body { 
+    background-color: #f8f9fa; 
+    color: #333; 
+}
+html[data-bs-theme="light"] .navbar {
+    background-color: #e2e8f0 !important; /* Light grey */
+    border-bottom: 1px solid #cbd5e1;
+}
+html[data-bs-theme="light"] .navbar-brand {
+    color: #1e293b !important;
+}
+html[data-bs-theme="light"] .nav-link,
+html[data-bs-theme="light"] .mac-switch-label {
+    color: #334155 !important;
+}
+
+html[data-bs-theme="light"] .bslib-sidebar-layout > .sidebar,
+html[data-bs-theme="light"] .control-label,
+html[data-bs-theme="light"] h4,
+html[data-bs-theme="light"] h5 {
+    color: #1e293b !important;
+}
+/* Ensure sidebar headers are blue in light mode! */
+html[data-bs-theme="light"] .sidebar h4,
+html[data-bs-theme="light"] .sidebar-explanation h5 {
+    color: #1d4ed8 !important;
+}
+html[data-bs-theme="light"] .sidebar-explanation p {
+    color: #475569 !important;
+}
+
+html[data-bs-theme="light"] .bslib-sidebar-layout .collapse-toggle {
+    color: #1e293b !important;
+    background-color: #e2e8f0 !important;
+    border-color: #cbd5e1 !important;
+}
+
+/* Custom Metric Cards Light Mode (Lighter Gradients) */
+html[data-bs-theme="light"] .card-primary { background-image: linear-gradient(-45deg, #a8c8ff, #b5c7ff, #8b99ff) !important; color: #111111 !important; }
+html[data-bs-theme="light"] .card-secondary { background-image: linear-gradient(-45deg, #d3b1ff, #cb9af5, #b69df0) !important; color: #111111 !important; }
+html[data-bs-theme="light"] .card-success { background-image: linear-gradient(-45deg, #9ae2d9, #9fd3cd, #87c3bc) !important; color: #111111 !important; }
+html[data-bs-theme="light"] .metric-left { 
+    border-right: 3px solid rgba(0,0,0,0.15) !important; 
+}
+html[data-bs-theme="light"] .card-primary .metric-icon,
+html[data-bs-theme="light"] .card-secondary .metric-icon,
+html[data-bs-theme="light"] .card-success .metric-icon { color: #1e293b; }
+
+/* Plotly Card Headers */
+html[data-bs-theme="light"] .card {
+    background-color: #ffffff; 
+    border: 1px solid #e2e8f0; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+}
+html[data-bs-theme="light"] .card-header {
+    background-color: #f1f5f9 !important; /* Light slate */
+    color: #1d4ed8 !important; /* Blue text */
+    border-bottom: 1px solid #e2e8f0 !important;
+}
+
+/* Selectize Dropdown overrides for Light Mode */
+html[data-bs-theme="light"] .selectize-dropdown,
+html[data-bs-theme="light"] .selectize-input,
+html[data-bs-theme="light"] .selectize-input input {
+    background-color: #ffffff !important;
+    color: #1e293b !important;
+    border-color: #cbd5e1 !important;
+}
+html[data-bs-theme="light"] .selectize-dropdown .active {
+    background-color: #3A86FF !important;
+    color: #ffffff !important;
+}
+
+/* DataTables Light Mode - Make columns white/light */
+html[data-bs-theme="light"] table.dataTable tbody tr,
+html[data-bs-theme="light"] table.dataTable tbody td {
+    background-color: #ffffff !important;
+    color: #111111 !important;
+}
+html[data-bs-theme="light"] table.dataTable.stripe tbody tr.odd td,
+html[data-bs-theme="light"] table.dataTable.display tbody tr.odd td {
+    background-color: #f8f9fa !important;
+}
+html[data-bs-theme="light"] table.dataTable.hover tbody tr:hover td,
+html[data-bs-theme="light"] table.dataTable.display tbody tr:hover td {
+    background-color: #e2e8f0 !important;
+}
+html[data-bs-theme="light"] .dataTables_info,
+html[data-bs-theme="light"] .dataTables_paginate {
+    color: #111111 !important;
+}
+html[data-bs-theme="light"] div.dataTables_wrapper div.dataTables_filter label {
+    color: #111111 !important;
+    font-weight: 600;
+}
+html[data-bs-theme="light"] div.dataTables_wrapper div.dataTables_filter input {
+    color: #000000 !important;
+    background-color: #ffffff !important;
+    border: 1px solid #94a3b8 !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23333333' class='bi bi-search' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E") !important;
+}
+
+.card-body { padding: 0; }
+.plotly-container { padding: 1rem; }

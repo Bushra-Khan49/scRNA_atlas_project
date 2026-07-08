@@ -1,6 +1,6 @@
 # Phase 2: Normalization and Clustering
 
-**Project Context**: In Phase 1, we successfully filtered out the dead cells and empty droplets. However, that dataset is still just a massive, unorganized matrix of healthy cells. The ultimate goal of this project is to map the immune system by grouping identical cells together. To accomplish this, Phase 2 takes the clean data from Phase 1, normalizes the biological variances, and crushes the 20,000 dimensions of the human genome down into a mathematical graph. By the end of this file, we will have successfully partitioned the blood sample into distinct transcriptomic islands.
+**Project Context**: In Phase 1, we successfully filtered out the dead cells and empty droplets. However, that dataset is still just a massive, unorganized matrix of healthy cells. The ultimate goal of this project is to map the immune system by grouping identical cells together. To accomplish this, Phase 2 takes the clean data from Phase 1, normalizes the biological variances, and crushes the 20,000 dimensions of the human genome down into a unsupervised graph. By the end of this file, we will have successfully partitioned the blood sample into distinct transcriptomic islands.
 
 ---
 
@@ -58,7 +58,7 @@ If you look at the black dots in **Figure 3**, you can see a very steep, dramati
 
 However, right around PC 10, the curve completely flattens out, forming a visual "elbow". **Why does it flatten?** Because after the first 10 dimensions, the algorithm has already captured all the major biological identities. Any dimensions after PC 10 mostly represent random statistical noise or minor, irrelevant variations between individual cells. 
 
-To make this mathematically obvious, **I manually drew a dashed red vertical line directly at PC 10**. This red line explicitly marks the exact inflection point where the true biological signal ends and the random statistical noise begins. Relying on this visual plateau and the red marker, I explicitly chose to use only the first 10 dimensions for the final clustering, guaranteeing that my downstream map is built entirely on true biology.
+To make this computationally obvious, **I manually drew a dashed red vertical line directly at PC 10**. This red line explicitly marks the exact inflection point where the true biological signal ends and the random statistical noise begins. Relying on this visual plateau and the red marker, I explicitly chose to use only the first 10 dimensions for the final clustering, guaranteeing that my downstream map is built entirely on true biology.
 
 ---
 
@@ -81,9 +81,9 @@ pbmc <- RunUMAP(pbmc, dims = 1:10)
 
 ---
 
-## 4. Visualizing the Mathematical Clusters
+## 4. Visualizing the unsupervised Clusters
 
-At this stage, the clustering is purely mathematical. The algorithm has grouped the cells by transcriptomic similarity, assigning them anonymous labels (e.g., "Cluster 0"). 
+At this stage, the clustering is purely unsupervised. The algorithm has grouped the cells by transcriptomic similarity, assigning them anonymous labels (e.g., "Cluster 0"). 
 
 ```r
 # Update the cluster names so they look cleaner in the legend
@@ -96,21 +96,21 @@ umap_plot <- DimPlot(pbmc, reduction = "umap", label = FALSE, pt.size = 0.5) +
   theme(axis.line = element_line(arrow = arrow(length = unit(0.3, "cm"), type = "closed")),
         plot.title = element_text(face = "bold", size = 14),
         legend.text = element_text(face = "bold", size = 10)) +
-  labs(title = "Figure 4: Mathematical Clustering", subtitle = "UMAP projection of KNN louvain clusters", x = "UMAP Dimension 1", y = "UMAP Dimension 2")
+  labs(title = "Figure 4: Unsupervised Clustering", subtitle = "UMAP projection of KNN louvain clusters", x = "UMAP Dimension 1", y = "UMAP Dimension 2")
 
 ggsave("../figures/02_umap_clusters.png", plot = umap_plot, width = 8, height = 6, bg = "white")
 ```
 
-![Figure 4: Mathematical Clustering](../figures/02_umap_clusters.png)
+![Figure 4: Unsupervised Clustering](../figures/02_umap_clusters.png)
 
 ### Image Interpretation: Validating the Clustering Success
-Looking directly at **Figure 4**, we can visually confirm that the mathematical clustering worked flawlessly. If the clustering had failed, we would just see one giant, undifferentiated blob of dots in the center. Instead, we see 9 highly distinct, separated "islands" of color. Because these physical spaces are separated on the UMAP, it proves that these cells have fundamentally different gene expression profiles. Even though we don't know what they are yet, the diagram proves that we have successfully isolated distinct cellular populations.
+Looking directly at **Figure 4**, we can visually confirm that the unsupervised clustering worked flawlessly. If the clustering had failed, we would just see one giant, undifferentiated blob of dots in the center. Instead, we see 9 highly distinct, separated "islands" of color. Because these physical spaces are separated on the UMAP, it proves that these cells have fundamentally different gene expression profiles. Even though we don't know what they are yet, the diagram proves that we have successfully isolated distinct cellular populations.
 
 ---
 
 ## 5. Saving the Clustered Dataset
 
-I saved the clustered Seurat object. In Phase 3, we will transition from mathematical clustering to biological annotation, identifying exactly what cell types these distinct islands represent.
+I saved the clustered Seurat object. In Phase 3, we will transition from unsupervised clustering to biological annotation, identifying exactly what cell types these distinct islands represent.
 
 ```r
 # Save the clustered Seurat object
@@ -120,4 +120,4 @@ saveRDS(pbmc, "../results/02_pbmc_clustered.rds")
 ---
 
 ### Phase 2 Complete
-**Conclusion & Next Steps:** We have successfully normalized our data, reduced its complexity through PCA, and algorithmically grouped the cells into 9 mathematically distinct clusters based purely on their RNA variance. However, these clusters are currently anonymous. In **Phase 3: Cell Type Annotation and Biomarker Validation**, we will map these mathematical islands to real biological lineages (like T Cells and B Cells) and extract their defining genetic signatures.
+**Conclusion & Next Steps:** We have successfully normalized our data, reduced its complexity through PCA, and algorithmically grouped the cells into 9 computationally distinct clusters based purely on their RNA variance. However, these clusters are currently anonymous. In **Phase 3: Cell Type Annotation and Biomarker Validation**, we will map these unsupervised islands to real biological lineages (like T Cells and B Cells) and extract their defining genetic signatures.

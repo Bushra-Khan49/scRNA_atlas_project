@@ -4,7 +4,7 @@
 ---
 
 ## 1. What is this file and why was it generated?
-During Phase 3 of the pipeline, I used the `SingleR` algorithmic database to transition our anonymous mathematical clusters (e.g., "Cluster 0") into true biological lineages (e.g., "T Cells"). 
+During Phase 3 of the pipeline, I used the `SingleR` algorithmic database to transition our anonymous unsupervised clusters (e.g., "Cluster 0") into true biological lineages (e.g., "T Cells"). 
 
 However, we cannot blindly trust an automated algorithm. To scientifically validate that these new names were correct, I ran a second differential expression test, this time grouping the cells by their newly assigned biological names. This CSV file is the master output of that test: it contains the definitive transcriptomic signatures that biologically validate our final cell map.
 

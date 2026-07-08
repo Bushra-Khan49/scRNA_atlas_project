@@ -24,19 +24,19 @@ Following quality control, the data was normalized to correct for varying sequen
 
 As shown in the elbow plot (**Figure 3**), there is a massive, steep drop in variance across the first few Principal Components. This sharp drop occurs because these initial components capture the largest, most obvious biological differences in the blood sample (for example, the massive genetic difference between a T Cell and a Monocyte). 
 
-However, right around Principal Component 10, the curve completely flattens out into a plateau. This flattening occurs because the algorithm has already mapped all the major biological identities; any variance beyond this point represents irrelevant statistical noise or minor individual cell quirks rather than distinct cell types. **To visually explicitly mark this inflection point, I drew a dashed red line directly at PC 10.** Relying on this visual plateau and the red marker, I purposefully isolated the first 10 dimensions for the final mathematical clustering, ensuring the model ignores the downstream noise.
+However, right around Principal Component 10, the curve completely flattens out into a plateau. This flattening occurs because the algorithm has already mapped all the major biological identities; any variance beyond this point represents irrelevant statistical noise or minor individual cell quirks rather than distinct cell types. **To visually explicitly mark this inflection point, I drew a dashed red line directly at PC 10.** Relying on this visual plateau and the red marker, I purposefully isolated the first 10 dimensions for the final unsupervised clustering, ensuring the model ignores the downstream noise.
 
 Utilizing these first 10 dimensions, I constructed a K-Nearest Neighbor (KNN) graph to map transcriptomic similarities, followed by Louvain clustering.
 
-![Figure 4: Mathematical Clustering](../figures/02_umap_clusters.png)
+![Figure 4: Unsupervised Clustering](../figures/02_umap_clusters.png)
 
-To visually confirm the success of the algorithm, I projected these multidimensional clusters into a 2D space using Uniform Manifold Approximation and Projection (UMAP). As shown in **Figure 4**, the cells resolved into 9 highly distinct, separate transcriptomic islands. The lack of a single, undifferentiated mass confirms that the normalization and mathematical clustering successfully separated the blood sample into distinct cellular subpopulations based purely on their RNA profiles.
+To visually confirm the success of the algorithm, I projected these multidimensional clusters into a 2D space using Uniform Manifold Approximation and Projection (UMAP). As shown in **Figure 4**, the cells resolved into 9 highly distinct, separate transcriptomic islands. The lack of a single, undifferentiated mass confirms that the normalization and unsupervised clustering successfully separated the blood sample into distinct cellular subpopulations based purely on their RNA profiles.
 
 ---
 
 ## 3. Algorithmic Cell Type Annotation and Biomarker Validation
 
-While the mathematical clustering successfully partitioned the data, it provided no biological context. To transition from anonymous mathematical clusters to true biological lineages, I utilized the `SingleR` algorithm to cross-reference the transcriptomic profile of our clusters against the Human Primary Cell Atlas.
+While the unsupervised clustering successfully partitioned the data, it provided no biological context. To transition from anonymous unsupervised clusters to true biological lineages, I utilized the `SingleR` algorithm to cross-reference the transcriptomic profile of our clusters against the Human Primary Cell Atlas.
 
 ![Figure 5: Biological Cell Type Map](../figures/03_umap_celltype.png)
 

@@ -2,7 +2,7 @@
 
 Before diving into the code, it is critical to understand the overarching goal of this project. The human peripheral immune system is incredibly complex, composed of many different types of cells (T cells, B cells, monocytes, etc.) all circulating together in the blood. Our objective is to take a raw blood sample, sequence the RNA of every single cell individually using 10x Genomics technology, and computationally reconstruct a high-resolution map of the immune system. 
 
-By analyzing the unique transcriptomic signature of each cell, we can computationally group them, identify them, and validate them. This file, **Phase 1**, is the foundation of that entire process. Before we can map the cells, we must mathematically separate the living, healthy cells from the dead cells and sequencing errors.
+By analyzing the unique transcriptomic signature of each cell, we can computationally group them, identify them, and validate them. This file, **Phase 1**, is the foundation of that entire process. Before we can map the cells, we must computationally separate the living, healthy cells from the dead cells and sequencing errors.
 
 ---
 
@@ -119,4 +119,4 @@ saveRDS(pbmc, "../results/01_pbmc_filtered.rds")
 ---
 
 ### Phase 1 Complete
-**Conclusion & Next Steps:** We have successfully loaded the raw dataset and applied strict biological cutoffs to filter out necrotic cells and empty droplets. With a clean, highly viable matrix of human immune cells now saved to disk, we are ready to proceed to the next stage of the pipeline. In **Phase 2: Normalization and Clustering**, we will take these healthy cells, normalize their sequencing depths, and mathematically group them into distinct transcriptomic islands.
+**Conclusion & Next Steps:** We have successfully loaded the raw dataset and applied strict biological cutoffs to filter out necrotic cells and empty droplets. With a clean, highly viable matrix of human immune cells now saved to disk, we are ready to proceed to the next stage of the pipeline. In **Phase 2: Normalization and Clustering**, we will take these healthy cells, normalize their sequencing depths, and computationally group them into distinct transcriptomic islands.

@@ -14,7 +14,7 @@ This repository contains an end-to-end Computational Biology pipeline and intera
 
 After fully processing the 10x Genomics dataset, the pipeline successfully retained **~2,638 highly viable cells** across 9 distinct transcriptomic clusters. 
 
-Using the `SingleR` algorithmic database and manual marker validation, I successfully annotated these mathematical clusters into 8 true biological lineages:
+Using the `SingleR` algorithmic database and manual marker validation, I successfully annotated these unsupervised clusters into 8 true biological lineages:
 * **T Cells (CD4+ and CD8+):** The most dominant population (~60% of the sample), driven by massive upregulation of *CD3D* and *AQP3*.
 * **Monocytes (CD14+ and FCGR3A+):** The second largest population (~20%), defined by textbook myeloid markers like *IGSF6* and *LYZ*.
 * **B Cells:** Accounting for ~10% of the sample, cleanly separated by *CD79A* and *VPREB3* expression.
@@ -28,7 +28,7 @@ Using the `SingleR` algorithmic database and manual marker validation, I success
 ## 🧬 Pipeline Methods
 
 ### 1. Quality Control (QC)
-In single-cell RNA sequencing, it is vital to mathematically remove dead, dying, or ruptured cells before analysis. 
+In single-cell RNA sequencing, it is vital to computationally remove dead, dying, or ruptured cells before analysis. 
 - **Mitochondrial Threshold (< 5%):** Apoptotic or lysed cells leak their cytoplasmic RNA, leaving behind a disproportionate ratio of mitochondrial RNA (which is protected inside the mitochondrial membrane). I strictly filtered out cells with `> 5%` mitochondrial RNA.
 - **Gene Count Threshold (200 < nFeature_RNA < 2500):** I excluded empty droplets (cells expressing very few genes) and doublets (two cells captured in one droplet, resulting in abnormally high gene counts).
 - *Of the ~20,000 protein-coding genes in the human genome, roughly 13,000+ were detected in this dataset after filtering.*
@@ -46,7 +46,7 @@ I utilized the Wilcoxon Rank Sum test via Seurat's `FindAllMarkers` algorithm to
 ## 🔬 Limitations & Discussion
 
 While the pipeline successfully resolved the major immune lineages, working with a small, single-condition public dataset presents known limitations:
-* **Algorithmic vs. Manual Annotation:** `SingleR` correctly identified the broad lineages (T cells, B cells), but mathematical annotation often struggles with highly similar sub-states. For example, CD4+ and CD8+ T cells share massive amounts of transcriptomic machinery, requiring manual marker validation (e.g., *IL7R* vs *CD8A*) to confidently separate them.
+* **Algorithmic vs. Manual Annotation:** `SingleR` correctly identified the broad lineages (T cells, B cells), but unsupervised annotation often struggles with highly similar sub-states. For example, CD4+ and CD8+ T cells share massive amounts of transcriptomic machinery, requiring manual marker validation (e.g., *IL7R* vs *CD8A*) to confidently separate them.
 * **Lack of Condition Comparison:** Because this dataset represents a single healthy donor, this pipeline cannot identify disease-specific markers. A future expansion of this project would require integrating a diseased dataset (e.g., Lupus or COVID-19 PBMCs) to perform true condition-based differential expression.
 
 ---

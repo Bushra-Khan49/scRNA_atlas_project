@@ -1,6 +1,6 @@
 # Phase 3: Cell Type Annotation and Biomarker Validation
 
-**Project Context**: In Phase 2, we successfully separated the blood sample into distinct mathematical clusters based on transcriptomic variance. However, "Cluster 0" and "Cluster 1" mean nothing in a biological context. The final objective of this pipeline is to construct a biologically accurate map of the immune system. Therefore, this phase takes those anonymous mathematical clusters, algorithmically identifies their true biological lineages (e.g., T Cells, B Cells), and statistically validates those identities by extracting their defining biomarker genes. 
+**Project Context**: In Phase 2, we successfully separated the blood sample into distinct unsupervised clusters based on transcriptomic variance. However, "Cluster 0" and "Cluster 1" mean nothing in a biological context. The final objective of this pipeline is to construct a biologically accurate map of the immune system. Therefore, this phase takes those anonymous unsupervised clusters, algorithmically identifies their true biological lineages (e.g., T Cells, B Cells), and statistically validates those identities by extracting their defining biomarker genes. 
 
 ---
 
@@ -54,7 +54,7 @@ ggsave("../figures/03_umap_celltype.png", plot = umap_celltype, width = 9, heigh
 ![Figure 5: Biological Cell Type Map](../figures/03_umap_celltype.png)
 
 ### Image Interpretation: Identifying the Lineages
-Looking at **Figure 5**, you can see that the algorithm successfully assigned a biological identity to every single island we found in Phase 2. The massive teal cluster dominating the left side of the map represents T Cells. On the right, we see perfectly isolated pockets of B Cells (orange), Monocytes (purple), and NK Cells (blue). Because these colors perfectly map to the physical islands we saw previously, it visually confirms that our mathematically distinct clusters actually represent entirely different cell lineages in the human immune system.
+Looking at **Figure 5**, you can see that the algorithm successfully assigned a biological identity to every single island we found in Phase 2. The massive teal cluster dominating the left side of the map represents T Cells. On the right, we see perfectly isolated pockets of B Cells (orange), Monocytes (purple), and NK Cells (blue). Because these colors perfectly map to the physical islands we saw previously, it visually confirms that our computationally distinct clusters actually represent entirely different cell lineages in the human immune system.
 
 ---
 

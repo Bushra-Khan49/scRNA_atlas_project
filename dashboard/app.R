@@ -88,7 +88,7 @@ ui <- page_navbar(
         
         selectInput("group_var", "Color Map By:", 
                     choices = c("Biological Cell Type" = "cell_type", 
-                                "Mathematical Clusters" = "seurat_clusters")),
+                                "Unsupervised Clusters" = "seurat_clusters")),
         
         selectizeInput("gene", "Examine Specific Gene:", 
                        choices = NULL, 
@@ -111,7 +111,7 @@ ui <- page_navbar(
           p("Shows the statistical distribution of the specific gene you selected. For example, if you select 'CD3D', you will see it is highly expressed almost exclusively in T-cells, proving it is a T-cell biomarker."),
           
           h5("Biomarker Data"),
-          p("The table at the bottom shows the raw differential expression statistics (p-values and log fold changes). It mathematically proves which genes define each cluster.")
+          p("The table at the bottom shows the raw differential expression statistics (p-values and log fold changes). It computationally proves which genes define each cluster.")
         )
       ),
       
